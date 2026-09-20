@@ -2,131 +2,635 @@
 <html lang="zh">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LeetCode Company Interview Problems · Categorized</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: #fff;
-    min-height: 100vh;
+  :root {
+    --bg-0: #0a0a0f;
+    --bg-1: #12121a;
+    --bg-card: rgba(255,255,255,0.03);
+    --bg-card-hover: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(124,138,255,0.5);
+    --text-1: #f0f0f5;
+    --text-2: #8b8ba0;
+    --text-3: #52526a;
+    --accent: #7c8aff;
+    --accent-2: #a78bfa;
+    --accent-3: #f0abfc;
   }
-  .container { max-width: 960px; margin: 0 auto; padding: 60px 20px; }
-  .top-bar { display: flex; justify-content: flex-end; margin-bottom: 20px; }
-  .lang-btn {
-    padding: 6px 14px;
-    border: 1px solid rgba(255,255,255,0.3);
-    background: transparent;
-    color: #fff;
-    border-radius: 6px;
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
+    background: var(--bg-0);
+    color: var(--text-1);
+    min-height: 100vh;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+    overflow-x: hidden;
+  }
+  /* Aurora background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: -20% -20% -20% -20%;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 15%, rgba(124,138,255,0.18), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 85% 20%, rgba(167,139,250,0.15), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 50% 100%, rgba(240,171,252,0.10), transparent 60%);
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 48px 32px 80px; position: relative; z-index: 1; }
+  .nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 72px; }
+  .brand { display: flex; align-items: center; gap: 12px; font-size: 14px; letter-spacing: 0.05em; }
+  .brand-mark {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 15px; color: var(--bg-0);
+    box-shadow: 0 8px 24px rgba(124,138,255,0.35);
+  }
+  .brand-text { font-weight: 600; color: var(--text-1); }
+  .brand-text span { color: var(--text-3); font-weight: 400; }
+  .nav-actions { display: flex; gap: 8px; }
+  .icon-btn {
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    color: var(--text-1);
+    border-radius: 10px;
     cursor: pointer;
     font-size: 12px;
     font-weight: 600;
+    font-family: inherit;
     letter-spacing: 0.05em;
-  }
-  .lang-btn:hover { background: rgba(255,255,255,0.1); }
-  h1 { font-size: 36px; margin: 0 0 8px; }
-  .subtitle { color: #a3a4b8; font-size: 15px; margin-bottom: 40px; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-  .card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 24px;
-    text-decoration: none;
-    color: #fff;
     transition: all 0.2s;
-    display: block;
+    backdrop-filter: blur(20px);
   }
-  .card:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: #4f46e5;
-    transform: translateY(-2px);
+  .icon-btn:hover { border-color: var(--border-hover); background: var(--bg-card-hover); }
+  .icon-btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border: none; color: var(--bg-0); }
+
+  .hero { margin-bottom: 56px; max-width: 780px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--text-2);
+    background: rgba(255,255,255,0.02);
+    margin-bottom: 24px;
+    backdrop-filter: blur(20px);
   }
-  .card-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
-  .card-num { font-size: 40px; font-weight: 700; color: #7c8aff; line-height: 1; }
-  .card-sub { color: #a3a4b8; font-size: 13px; margin-top: 8px; }
-  .footer { color: #6b6c85; font-size: 12px; margin-top: 40px; }
-  .footer a { color: #7c8aff; }
+  .eyebrow-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 12px #4ade80;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  h1 {
+    font-size: clamp(40px, 6vw, 68px);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    margin: 0 0 20px;
+    background: linear-gradient(135deg, var(--text-1) 0%, var(--text-2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  h1 .gradient {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2), var(--accent-3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .lede {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-2);
+    max-width: 620px;
+  }
+  .lede a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(124,138,255,0.3); }
+  .lede a:hover { border-color: var(--accent); }
+
+  .search-row {
+    display: flex; gap: 12px; margin-bottom: 32px;
+    max-width: 560px;
+  }
+  .search-input {
+    flex: 1;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-1);
+    font-size: 14px;
+    font-family: inherit;
+    backdrop-filter: blur(20px);
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { outline: none; border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-3); }
+
+  .section-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em;
+    color: var(--text-3); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(124,138,255,calc(var(--heat) * 0.08)), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+  .card:hover::before { opacity: 1; }
+  .card-logo {
+    position: relative;
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+  }
+  .card-logo img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+  .logo-fallback {
+    display: none;
+    width: 100%; height: 100%;
+    align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 20px;
+    color: var(--bg-0);
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  }
+  .card-body { display: flex; flex-direction: column; gap: 10px; }
+  .card-title { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+  .card-meta { display: baseline; }
+  .card-meta .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px; font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .card-meta .unit-problems {
+    font-size: 12px; color: var(--text-2);
+    margin-left: 8px;
+  }
+  .card-footer {
+    display: flex; flex-direction: column; gap: 6px;
+    font-size: 11px; color: var(--text-3);
+  }
+  .cat-pct { font-family: 'JetBrains Mono', monospace; letter-spacing: 0; }
+  .heat-bar {
+    height: 3px; border-radius: 100px;
+    background: rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+  .heat-fill {
+    display: block; height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    border-radius: 100px;
+  }
+
+  .footer {
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    color: var(--text-3);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer a { color: var(--text-2); text-decoration: none; }
+  .footer a:hover { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .container { padding: 32px 20px 60px; }
+    .nav { margin-bottom: 48px; }
+    .hero { margin-bottom: 40px; }
+    .cards { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  }
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="top-bar"><button class="lang-btn" id="lang-btn">EN</button></div>
-  <h1 id="h1">LeetCode 公司高频题</h1>
-  <div class="subtitle" id="subtitle">按 灵茶山艾府 (0x3F) 题单分类 · 每个子分类内按 Frequency 从高到低排序</div>
+  <div class="nav">
+    <div class="brand">
+      <div class="brand-mark">LC</div>
+      <div class="brand-text">ruokezhang<span>.com</span></div>
+    </div>
+    <div class="nav-actions">
+      <a class="icon-btn" href="https://github.com/RuokeZhang/lc-tag-0x3f" target="_blank" rel="noopener">GitHub</a>
+      <button class="icon-btn" id="lang-btn">EN</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="eyebrow">
+      <span class="eyebrow-dot"></span>
+      <span id="eyebrow-text">Updated · 灵茶山艾府 taxonomy · 15 companies</span>
+    </div>
+    <h1 id="h1">Company-tagged<br><span class="gradient">LeetCode</span> problems.</h1>
+    <p class="lede" id="lede">
+      Every problem tagged for a company, categorized by
+      <a href="https://leetcode.cn/u/endlesscheng/" target="_blank" rel="noopener">灵茶山艾府 (0x3F)</a>'s
+      problem-list taxonomy — sorted by frequency, marked with ★ if it appears in Blind 75, Grind 75, NeetCode 250, LC 75, Top 100, or Interview 150.
+    </p>
+  </div>
+
+  <div class="search-row">
+    <input class="search-input" id="q" type="text" placeholder="Filter companies…">
+  </div>
+
+  <div class="section-label" id="section-label">Companies</div>
   <div class="cards" id="cards">
 
-        <a class="card" href="google.html" data-total="2274" data-categorized="1606">
-          <div class="card-title">Google</div>
-          <div class="card-num">2274</div>
-          <div class="card-sub"></div>
+        <a class="card" href="google.html"
+           data-total="2274" data-categorized="1606"
+           data-name-zh="Google" data-name-en="Google"
+           style="--heat: 1.000;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/google.com" alt="Google" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">G</div></div>
+          <div class="card-body">
+            <div class="card-title">Google</div>
+            <div class="card-meta">
+              <span class="num">2,274</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">71% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:100.0%"></span></span>
+            </div>
+          </div>
         </a>
 
-        <a class="card" href="bloomberg.html" data-total="1190" data-categorized="832">
-          <div class="card-title">Bloomberg</div>
-          <div class="card-num">1190</div>
-          <div class="card-sub"></div>
+        <a class="card" href="amazon.html"
+           data-total="1957" data-categorized="1389"
+           data-name-zh="Amazon" data-name-en="Amazon"
+           style="--heat: 0.861;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/amazon.com" alt="Amazon" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">A</div></div>
+          <div class="card-body">
+            <div class="card-title">Amazon</div>
+            <div class="card-meta">
+              <span class="num">1,957</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">71% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:86.1%"></span></span>
+            </div>
+          </div>
         </a>
 
-        <a class="card" href="meta.html" data-total="1366" data-categorized="965">
-          <div class="card-title">Meta</div>
-          <div class="card-num">1366</div>
-          <div class="card-sub"></div>
+        <a class="card" href="microsoft.html"
+           data-total="1374" data-categorized="995"
+           data-name-zh="Microsoft" data-name-en="Microsoft"
+           style="--heat: 0.604;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/microsoft.com" alt="Microsoft" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">M</div></div>
+          <div class="card-body">
+            <div class="card-title">Microsoft</div>
+            <div class="card-meta">
+              <span class="num">1,374</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">72% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:60.4%"></span></span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="meta.html"
+           data-total="1366" data-categorized="965"
+           data-name-zh="Meta" data-name-en="Meta"
+           style="--heat: 0.601;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/meta.com" alt="Meta" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">M</div></div>
+          <div class="card-body">
+            <div class="card-title">Meta</div>
+            <div class="card-meta">
+              <span class="num">1,366</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">71% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:60.1%"></span></span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="apple.html"
+           data-total="303" data-categorized="228"
+           data-name-zh="Apple" data-name-en="Apple"
+           style="--heat: 0.133;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/apple.com" alt="Apple" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">A</div></div>
+          <div class="card-body">
+            <div class="card-title">Apple</div>
+            <div class="card-meta">
+              <span class="num">303</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">75% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:13.3%"></span></span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="bloomberg.html"
+           data-total="1190" data-categorized="832"
+           data-name-zh="Bloomberg" data-name-en="Bloomberg"
+           style="--heat: 0.523;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/bloomberg.com" alt="Bloomberg" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">B</div></div>
+          <div class="card-body">
+            <div class="card-title">Bloomberg</div>
+            <div class="card-meta">
+              <span class="num">1,190</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">70% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:52.3%"></span></span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="uber.html"
+           data-total="366" data-categorized="311"
+           data-name-zh="Uber" data-name-en="Uber"
+           style="--heat: 0.161;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/uber.com" alt="Uber" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">U</div></div>
+          <div class="card-body">
+            <div class="card-title">Uber</div>
+            <div class="card-meta">
+              <span class="num">366</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">85% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:16.1%"></span></span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="tiktok.html"
+           data-total="359" data-categorized="309"
+           data-name-zh="TikTok" data-name-en="TikTok"
+           style="--heat: 0.158;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/tiktok.com" alt="TikTok" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">T</div></div>
+          <div class="card-body">
+            <div class="card-title">TikTok</div>
+            <div class="card-meta">
+              <span class="num">359</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">86% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:15.8%"></span></span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="linkedin.html"
+           data-total="178" data-categorized="146"
+           data-name-zh="LinkedIn" data-name-en="LinkedIn"
+           style="--heat: 0.078;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/linkedin.com" alt="LinkedIn" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">L</div></div>
+          <div class="card-body">
+            <div class="card-title">LinkedIn</div>
+            <div class="card-meta">
+              <span class="num">178</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">82% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:7.8%"></span></span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="oracle.html"
+           data-total="323" data-categorized="262"
+           data-name-zh="Oracle" data-name-en="Oracle"
+           style="--heat: 0.142;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/oracle.com" alt="Oracle" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">O</div></div>
+          <div class="card-body">
+            <div class="card-title">Oracle</div>
+            <div class="card-meta">
+              <span class="num">323</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">81% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:14.2%"></span></span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="adobe.html"
+           data-total="156" data-categorized="118"
+           data-name-zh="Adobe" data-name-en="Adobe"
+           style="--heat: 0.069;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/adobe.com" alt="Adobe" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">A</div></div>
+          <div class="card-body">
+            <div class="card-title">Adobe</div>
+            <div class="card-meta">
+              <span class="num">156</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">76% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:6.9%"></span></span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="nvidia.html"
+           data-total="133" data-categorized="104"
+           data-name-zh="NVIDIA" data-name-en="NVIDIA"
+           style="--heat: 0.058;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/nvidia.com" alt="NVIDIA" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">N</div></div>
+          <div class="card-body">
+            <div class="card-title">NVIDIA</div>
+            <div class="card-meta">
+              <span class="num">133</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">78% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:5.8%"></span></span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="goldman-sachs.html"
+           data-total="259" data-categorized="210"
+           data-name-zh="Goldman Sachs" data-name-en="Goldman Sachs"
+           style="--heat: 0.114;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/goldmansachs.com" alt="Goldman Sachs" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">G</div></div>
+          <div class="card-body">
+            <div class="card-title">Goldman Sachs</div>
+            <div class="card-meta">
+              <span class="num">259</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">81% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:11.4%"></span></span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="salesforce.html"
+           data-total="187" data-categorized="150"
+           data-name-zh="Salesforce" data-name-en="Salesforce"
+           style="--heat: 0.082;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/salesforce.com" alt="Salesforce" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">S</div></div>
+          <div class="card-body">
+            <div class="card-title">Salesforce</div>
+            <div class="card-meta">
+              <span class="num">187</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">80% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:8.2%"></span></span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="doordash.html"
+           data-total="80" data-categorized="68"
+           data-name-zh="Doordash" data-name-en="Doordash"
+           style="--heat: 0.035;">
+          <div class="card-logo"><img src="https://logo.clearbit.com/doordash.com" alt="Doordash" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">D</div></div>
+          <div class="card-body">
+            <div class="card-title">Doordash</div>
+            <div class="card-meta">
+              <span class="num">80</span>
+              <span class="unit-problems">problems</span>
+            </div>
+            <div class="card-footer">
+              <span class="cat-pct">85% categorized</span>
+              <span class="heat-bar"><span class="heat-fill" style="width:3.5%"></span></span>
+            </div>
+          </div>
         </a>
   </div>
-  <div class="footer" id="footer">
-    数据来源: <a href="https://github.com/snehasishroy/leetcode-companywise-interview-questions">snehasishroy/leetcode-companywise-interview-questions</a> ·
-    分类参考: <a href="https://leetcode.cn/u/endlesscheng/">灵茶山艾府</a>
+
+  <div class="footer">
+    <div id="footer-left">Data · <a href="https://github.com/snehasishroy/leetcode-companywise-interview-questions" target="_blank" rel="noopener">snehasishroy/leetcode-companywise-interview-questions</a></div>
+    <div id="footer-right">Categories · <a href="https://leetcode.cn/u/endlesscheng/" target="_blank" rel="noopener">灵茶山艾府 (0x3F)</a></div>
   </div>
 </div>
 <script>
 const UI = {
   zh: {
     title: 'LeetCode 公司高频题',
-    subtitle: '按 灵茶山艾府 (0x3F) 题单分类 · 每个子分类内按 Frequency 从高到低排序',
+    eyebrow: n => `最新 · 灵神题单分类 · ${n} 家公司`,
+    h1: '公司高频<br><span class="gradient">LeetCode</span> 题目',
+    lede: '按公司分类的所有 LeetCode 题，按 <a href="https://leetcode.cn/u/endlesscheng/" target="_blank" rel="noopener">灵茶山艾府 (0x3F)</a> 的题单分类整理——按 Frequency 从高到低排序，Blind 75 / Grind 75 / NeetCode 250 / LC 75 / Top 100 / Interview 150 里的题会加上 ★ 标记。',
     btn: 'EN',
-    problems: '题',
-    categorized: '已分类',
-    footer: '数据来源: <a href="https://github.com/snehasishroy/leetcode-companywise-interview-questions">snehasishroy/leetcode-companywise-interview-questions</a> · 分类参考: <a href="https://leetcode.cn/u/endlesscheng/">灵茶山艾府</a>',
+    problemsUnit: '题',
+    catPct: p => `已分类 ${p}%`,
+    section: '公司',
+    searchPh: '搜索公司…',
+    footerLeft: '数据 · <a href="https://github.com/snehasishroy/leetcode-companywise-interview-questions" target="_blank" rel="noopener">snehasishroy/leetcode-companywise-interview-questions</a>',
+    footerRight: '分类 · <a href="https://leetcode.cn/u/endlesscheng/" target="_blank" rel="noopener">灵茶山艾府 (0x3F)</a>',
   },
   en: {
     title: 'LeetCode Company Interview Problems',
-    subtitle: 'Categorized by 灵茶山艾府 (0x3F) · Sorted by frequency within each subcategory',
+    eyebrow: n => `Updated · 灵茶山艾府 taxonomy · ${n} companies`,
+    h1: 'Company-tagged<br><span class="gradient">LeetCode</span> problems.',
+    lede: 'Every problem tagged for a company, categorized by <a href="https://leetcode.cn/u/endlesscheng/" target="_blank" rel="noopener">灵茶山艾府 (0x3F)</a>\'s problem-list taxonomy — sorted by frequency, marked with ★ if it appears in Blind 75, Grind 75, NeetCode 250, LC 75, Top 100, or Interview 150.',
     btn: '中',
-    problems: 'problems',
-    categorized: 'categorized',
-    footer: 'Data: <a href="https://github.com/snehasishroy/leetcode-companywise-interview-questions">snehasishroy/leetcode-companywise-interview-questions</a> · Categories: <a href="https://leetcode.cn/u/endlesscheng/">灵茶山艾府</a>',
+    problemsUnit: 'problems',
+    catPct: p => `${p}% categorized`,
+    section: 'Companies',
+    searchPh: 'Filter companies…',
+    footerLeft: 'Data · <a href="https://github.com/snehasishroy/leetcode-companywise-interview-questions" target="_blank" rel="noopener">snehasishroy/leetcode-companywise-interview-questions</a>',
+    footerRight: 'Categories · <a href="https://leetcode.cn/u/endlesscheng/" target="_blank" rel="noopener">灵茶山艾府 (0x3F)</a>',
   },
 };
+
+const cards = document.querySelectorAll('.card');
+const n = cards.length;
+
 function applyLang(lang) {
   const l = UI[lang];
-  document.getElementById('h1').textContent = l.title;
-  document.getElementById('subtitle').textContent = l.subtitle;
-  document.getElementById('lang-btn').textContent = l.btn;
-  document.getElementById('footer').innerHTML = l.footer;
   document.title = l.title;
   document.documentElement.lang = lang;
-  // Update card sub text
-  document.querySelectorAll('.card').forEach(card => {
-    const sub = card.querySelector('.card-sub');
-    const n = card.dataset.total;
-    const c = card.dataset.categorized;
-    const pct = Math.round(100 * c / n);
-    sub.textContent = lang === 'zh'
-      ? `${l.problems} · ${l.categorized} ${c} (${pct}%)`
-      : `${l.problems} · ${c} ${l.categorized} (${pct}%)`;
+  document.getElementById('eyebrow-text').textContent = l.eyebrow(n);
+  document.getElementById('h1').innerHTML = l.h1;
+  document.getElementById('lede').innerHTML = l.lede;
+  document.getElementById('lang-btn').textContent = l.btn;
+  document.getElementById('section-label').textContent = l.section;
+  document.getElementById('q').placeholder = l.searchPh;
+  document.getElementById('footer-left').innerHTML = l.footerLeft;
+  document.getElementById('footer-right').innerHTML = l.footerRight;
+  cards.forEach(card => {
+    const total = Number(card.dataset.total);
+    const cat = Number(card.dataset.categorized);
+    const pct = Math.round(100 * cat / total);
+    card.querySelector('.unit-problems').textContent = l.problemsUnit;
+    card.querySelector('.cat-pct').textContent = l.catPct(pct);
   });
 }
-const savedLang = localStorage.getItem('lang') || 'zh';
+
 document.getElementById('lang-btn').addEventListener('click', () => {
   const cur = localStorage.getItem('lang') || 'zh';
   const next = cur === 'zh' ? 'en' : 'zh';
   localStorage.setItem('lang', next);
   applyLang(next);
 });
-applyLang(savedLang);
+
+document.getElementById('q').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase().trim();
+  cards.forEach(card => {
+    const name = card.querySelector('.card-title').textContent.toLowerCase();
+    card.style.display = !q || name.includes(q) ? '' : 'none';
+  });
+});
+
+applyLang(localStorage.getItem('lang') || 'zh');
 </script>
 </body>
 </html>
