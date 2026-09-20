@@ -12,12 +12,14 @@ Outputs are placed in this viz/ directory as <company>.html plus index.html.
 import csv
 import json
 import sys
+import urllib.request
 from pathlib import Path
 from collections import defaultdict
 
 BASE = Path(__file__).parent
 REPO_ROOT = BASE.parent
 OUT_DIR = BASE / 'leetcode'  # deployed under ruokezhang.com/leetcode/
+RATINGS_URL = 'https://cdn.jsdelivr.net/gh/zerotrac/leetcode_problem_rating@main/ratings.txt'
 
 DEFAULT_COMPANIES = [
     'google', 'amazon', 'microsoft', 'meta', 'apple',
@@ -582,6 +584,25 @@ def load_basics():
         return json.load(f)
 
 
+def load_ratings():
+    path = BASE / 'ratings.json'
+    if not path.is_file():
+        return {}
+    with open(path) as f:
+        return json.load(f)
+
+
+def refresh_ratings():
+    with urllib.request.urlopen(RATINGS_URL, timeout=30) as response:
+        lines = response.read().decode('utf-8').splitlines()
+    rows = csv.DictReader(lines, delimiter='\t')
+    ratings = {row['ID']: round(float(row['Rating']), 2) for row in rows}
+    path = BASE / 'ratings.json'
+    path.write_text(json.dumps(ratings, separators=(',', ':'), sort_keys=True), encoding='utf-8')
+    print(f"[ok] ratings: {len(ratings)} contest problems -> {path.name}")
+    return ratings
+
+
 def load_csv(path):
     with open(path) as f:
         return list(csv.DictReader(f))
@@ -591,7 +612,7 @@ def parse_pct(s):
     return float(s.rstrip('%'))
 
 
-def build_company(company, id_to_cats, titles, basics):
+def build_company(company, id_to_cats, titles, basics, ratings):
     company_dir = REPO_ROOT / company
     if not company_dir.is_dir():
         print(f"[skip] {company}: directory not found")
@@ -631,6 +652,7 @@ def build_company(company, id_to_cats, titles, basics):
                     'title_zh': t.get('zh') or row['Title'],
                     'slug': slug,
                     'difficulty': row['Difficulty'],
+                    'rating': ratings.get(str(pid)),
                     'acceptance': parse_pct(row['Acceptance %']),
                     'freq': {},
                     'categories': id_to_cats.get(pid, []),
@@ -711,13 +733,16 @@ def build_index(stats):
 
 
 def main():
-    companies = sys.argv[1:] or DEFAULT_COMPANIES
+    args = sys.argv[1:]
+    should_refresh_ratings = '--refresh-ratings' in args
+    companies = [arg for arg in args if arg != '--refresh-ratings'] or DEFAULT_COMPANIES
     OUT_DIR.mkdir(exist_ok=True)
     id_to_cats = build_id_to_categories()
     titles = load_titles()
     basics = load_basics()
-    print(f"Loaded {len(titles)} problem titles, {len(basics.get('union', []))} basic problems")
-    stats = [build_company(c, id_to_cats, titles, basics) for c in companies]
+    ratings = refresh_ratings() if should_refresh_ratings else load_ratings()
+    print(f"Loaded {len(titles)} problem titles, {len(basics.get('union', []))} basic problems, {len(ratings)} ratings")
+    stats = [build_company(c, id_to_cats, titles, basics, ratings) for c in companies]
     build_index([s for s in stats if s])
 
 
@@ -843,6 +868,10 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   .diff-Easy { background: #dcfce7; color: #166534; }
   .diff-Medium { background: #fef3c7; color: #92400e; }
   .diff-Hard { background: #fee2e2; color: #991b1b; }
+  .col-rating { display: none; }
+  body.show-rating .col-rating { display: table-cell; }
+  .rating-score { font-family: "SF Mono", Menlo, monospace; font-weight: 600; color: #4f46e5; }
+  .rating-na { color: #d1d5db; }
   td.freq { font-variant-numeric: tabular-nums; }
   .freq-bar {
     display: inline-block;
@@ -998,6 +1027,10 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <input type="checkbox" id="basic-only">
     <span class="l-basic">仅显示基础题 ★</span>
   </label>
+  <label style="display:inline-flex;align-items:center;gap:6px;">
+    <input type="checkbox" id="show-rating">
+    <span class="l-rating-toggle">显示周赛难度分</span>
+  </label>
 </div>
 <div class="stats-bar" id="stats"></div>
 <div class="layout">
@@ -1015,6 +1048,7 @@ const state = {
   activeCat: null,
   lang: localStorage.getItem('lang') || 'zh',
   basicOnly: false,
+  showRating: false,
 };
 
 // UI text bundles
@@ -1027,10 +1061,12 @@ const UI = {
     timeframe: '时间段:', difficulty: '难度:', minFreq: '最小频率:', search: '搜索:',
     basic: '仅显示基础题 ★',
     basicHint: '基础题 = Blind 75 / Grind 75 / NeetCode 250 / LC 75 / Top 100 / Interview 150 的并集',
+    ratingToggle: '显示周赛难度分',
+    ratingHint: '难度分数据来自 zerotrac/leetcode_problem_rating，仅周赛题有分数',
     all: '全部', tf6m: '最近 6 个月', tf30d: '最近 30 天', tf3m: '最近 3 个月',
     tf6mp: '6 个月以前', tfAll: '全部', mfNone: '无限制',
     searchPh: '题目/ID',
-    colId: '#', colTitle: '题目', colDiff: '难度', colFreq: '频率', colAcc: '通过率', colCat: '分类',
+    colId: '#', colTitle: '题目', colDiff: '难度', colRating: '难度分', colFreq: '频率', colAcc: '通过率', colCat: '分类',
     allCats: '全部分类', empty: '没有符合条件的题目',
     stats: (t, m, u) => `共 <strong>${t}</strong> 题 · 当前筛选匹配 <strong>${m}</strong> 题 · 未分类 <strong>${u}</strong> 题`,
     problemsCount: (n) => `${n} 题`,
@@ -1043,10 +1079,12 @@ const UI = {
     timeframe: 'Period:', difficulty: 'Difficulty:', minFreq: 'Min Freq:', search: 'Search:',
     basic: 'Basics only ★',
     basicHint: 'Basics = union of Blind 75 / Grind 75 / NeetCode 250 / LC 75 / Top 100 / Interview 150',
+    ratingToggle: 'Show contest rating',
+    ratingHint: 'Ratings from zerotrac/leetcode_problem_rating; only contest problems have a score',
     all: 'All', tf6m: 'Last 6 months', tf30d: 'Last 30 days', tf3m: 'Last 3 months',
     tf6mp: 'Older than 6 months', tfAll: 'All time', mfNone: 'No limit',
     searchPh: 'Title / ID',
-    colId: '#', colTitle: 'Title', colDiff: 'Difficulty', colFreq: 'Frequency', colAcc: 'Acceptance', colCat: 'Category',
+    colId: '#', colTitle: 'Title', colDiff: 'Difficulty', colRating: 'Rating', colFreq: 'Frequency', colAcc: 'Acceptance', colCat: 'Category',
     allCats: 'All Categories', empty: 'No problems match the current filters',
     stats: (t, m, u) => `Total <strong>${t}</strong> · Matched <strong>${m}</strong> · Uncategorized <strong>${u}</strong>`,
     problemsCount: (n) => `${n} problems`,
@@ -1191,6 +1229,7 @@ function buildTable(problems) {
   tbl.innerHTML = `<thead><tr>
     <th>${l.colId}</th><th>${l.colTitle}</th>
     <th class="col-diff">${l.colDiff}</th>
+    <th class="col-rating">${l.colRating}</th>
     <th class="col-freq">${l.colFreq}</th>
     <th class="col-acc">${l.colAcc}</th>
     <th class="col-cat">${l.colCat}</th>
@@ -1212,10 +1251,14 @@ function buildTable(problems) {
     const star = p.basic ? '<span class="star" title="Basic problem">★</span>' : '';
     const srcs = (p.basic_sources || []).map(s => srcLabels[s] || s).join(' · ');
     const srcTag = srcs ? `<span class="basic-src" title="${srcs}">${srcs}</span>` : '';
+    const rating = p.rating == null
+      ? '<span class="rating-na">—</span>'
+      : `<span class="rating-score" title="${p.rating.toFixed(2)}">${Math.round(p.rating)}</span>`;
     tr.innerHTML = `
       <td class="id">${p.id}</td>
       <td class="title">${star}<a href="${problemUrl(p)}" target="_blank" rel="noopener">${problemTitle(p)}</a>${srcTag}</td>
       <td class="col-diff"><span class="diff diff-${p.difficulty}">${p.difficulty}</span></td>
+      <td class="col-rating">${rating}</td>
       <td class="freq col-freq"><span class="freq-bar" style="width:${Math.max(2, f)}px"></span>${f.toFixed(1)}%</td>
       <td class="freq col-acc">${p.acceptance.toFixed(1)}%</td>
       <td class="cat-tags col-cat">${tags || '<span style="color:#d1d5db">—</span>'}</td>
@@ -1256,6 +1299,10 @@ function applyStaticText() {
   const basicLabel = document.querySelector('.l-basic');
   basicLabel.textContent = l.basic;
   basicLabel.parentElement.title = l.basicHint;
+  const ratingLabel = document.querySelector('.l-rating-toggle');
+  ratingLabel.textContent = l.ratingToggle;
+  ratingLabel.parentElement.title = l.ratingHint;
+  document.body.classList.toggle('show-rating', state.showRating);
   document.documentElement.lang = state.lang === 'zh' ? 'zh' : 'en';
 }
 
@@ -1293,6 +1340,10 @@ document.getElementById('lang-btn').addEventListener('click', () => {
 document.getElementById('basic-only').addEventListener('change', e => {
   state.basicOnly = e.target.checked;
   rerender();
+});
+document.getElementById('show-rating').addEventListener('change', e => {
+  state.showRating = e.target.checked;
+  document.body.classList.toggle('show-rating', state.showRating);
 });
 rerender();
 </script>

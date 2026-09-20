@@ -3,7 +3,8 @@
 Static HTML visualization of company-tagged LeetCode problems, categorized by
 [灵茶山艾府 (0x3F)](https://leetcode.cn/u/endlesscheng/)'s problem lists. Each
 subcategory is sorted by frequency (descending). Supports Chinese/English toggle
-and switches problem links between `leetcode.cn` and `leetcode.com`.
+and switches problem links between `leetcode.cn` and `leetcode.com`. Contest
+difficulty ratings can be shown on demand.
 
 ## Files
 
@@ -13,6 +14,8 @@ and switches problem links between `leetcode.cn` and `leetcode.com`.
   Top Interview 150 into `basics.json`.
 - `lc_titles.json` — cached zh/en title + slug for every LC problem, fetched
   from `leetcode.cn/graphql/`.
+- `ratings.json` — cached contest difficulty ratings from
+  [zerotrac/leetcode_problem_rating](https://github.com/zerotrac/leetcode_problem_rating).
 - `index.html` (repo root) — 302 to `/leetcode/`.
 - `leetcode/index.html` — landing page linking to each company's page.
 - `leetcode/<company>.html` — self-contained page (data + JS embedded).
@@ -22,8 +25,9 @@ and switches problem links between `leetcode.cn` and `leetcode.com`.
 ## Rebuild
 
 ```bash
-python3 build.py                  # default: google bloomberg meta
+python3 build.py                  # rebuild all supported companies
 python3 build.py apple microsoft  # any companies with a sibling CSV dir
+python3 build.py --refresh-ratings # refresh ratings, then rebuild all companies
 ```
 
 ## Data sources
@@ -32,6 +36,9 @@ python3 build.py apple microsoft  # any companies with a sibling CSV dir
   [snehasishroy/leetcode-companywise-interview-questions](https://github.com/snehasishroy/leetcode-companywise-interview-questions)
 - Categorization: 灵茶山艾府's题单 series on leetcode.cn discuss
   (链表/二叉树/DP/图论/数据结构/单调栈/二分/贪心/数学/字符串/位运算/回溯/滑动窗口)
+- Contest difficulty ratings:
+  [zerotrac/leetcode_problem_rating](https://github.com/zerotrac/leetcode_problem_rating)
+- Company marks: [Simple Icons](https://simpleicons.org/) and Wikimedia Commons
 
 ## Notes
 
