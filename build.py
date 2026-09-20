@@ -52,6 +52,26 @@ COMPANY_DISPLAY = {
     'ibm': 'IBM',
 }
 
+# Brand colors for the letter-monogram fallback (used when we don't ship
+# an SVG for that company).
+COMPANY_BRAND_COLOR = {
+    'google': '#4285F4',
+    'amazon': '#FF9900',
+    'microsoft': '#00A4EF',
+    'meta': '#0866FF',
+    'apple': '#000000',
+    'bloomberg': '#000000',
+    'uber': '#000000',
+    'tiktok': '#000000',
+    'linkedin': '#0A66C2',
+    'oracle': '#F80000',
+    'adobe': '#FF0000',
+    'nvidia': '#76B900',
+    'goldman-sachs': '#7399C6',
+    'salesforce': '#00A1E0',
+    'doordash': '#EB1700',
+}
+
 # Merge these main categories into their parents (subcategories are prefixed).
 MERGE_MAP = {
     '一般树': '二叉树',
@@ -654,16 +674,25 @@ def build_index(stats):
     for s in valid:
         company = s['company']
         display = COMPANY_DISPLAY.get(company, company.replace('-', ' ').title())
-        domain = COMPANY_DOMAINS.get(company, f"{company}.com")
-        logo_url = f"https://logo.clearbit.com/{domain}"
         pct = 100 * s['categorized'] / s['total'] if s['total'] else 0
         heat = s['total'] / max_total  # 0-1, for a subtle intensity bar
+        svg_path = OUT_DIR / 'logos' / f'{company}.svg'
+        has_svg = svg_path.is_file()
+        brand = COMPANY_BRAND_COLOR.get(company, '#4f46e5')
+        initial = display[0]
+        if has_svg:
+            logo_html = (f'<img src="logos/{company}.svg" alt="{display}" loading="lazy" '
+                         f'onerror="this.parentElement.classList.add(\'no-logo\')">')
+            logo_class = "card-logo"
+        else:
+            logo_html = f'<span class="mono">{initial}</span>'
+            logo_class = "card-logo no-logo"
         cards.append(f"""
         <a class="card" href="{company}.html"
            data-total="{s['total']}" data-categorized="{s['categorized']}"
            data-name-zh="{display}" data-name-en="{display}"
-           style="--heat: {heat:.3f};">
-          <div class="card-logo"><img src="{logo_url}" alt="{display}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">{display[0]}</div></div>
+           style="--heat: {heat:.3f}; --brand: {brand};">
+          <div class="{logo_class}">{logo_html}</div>
           <div class="card-body">
             <div class="card-title">{display}</div>
             <div class="card-meta">
@@ -1464,15 +1493,17 @@ INDEX_TEMPLATE = r"""<!DOCTYPE html>
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     flex-shrink: 0;
   }
-  .card-logo img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
-  .logo-fallback {
-    display: none;
-    width: 100%; height: 100%;
-    align-items: center; justify-content: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700; font-size: 20px;
-    color: var(--bg-0);
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  .card-logo img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+  .card-logo.no-logo {
+    background: var(--brand, linear-gradient(135deg, var(--accent), var(--accent-2)));
+    color: #fff;
+  }
+  .card-logo.no-logo .mono {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
   }
   .card-body { display: flex; flex-direction: column; gap: 10px; }
   .card-title { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }

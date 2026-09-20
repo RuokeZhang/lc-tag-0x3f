@@ -190,15 +190,17 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     flex-shrink: 0;
   }
-  .card-logo img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
-  .logo-fallback {
-    display: none;
-    width: 100%; height: 100%;
-    align-items: center; justify-content: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700; font-size: 20px;
-    color: var(--bg-0);
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  .card-logo img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+  .card-logo.no-logo {
+    background: var(--brand, linear-gradient(135deg, var(--accent), var(--accent-2)));
+    color: #fff;
+  }
+  .card-logo.no-logo .mono {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
   }
   .card-body { display: flex; flex-direction: column; gap: 10px; }
   .card-title { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
@@ -288,8 +290,8 @@
         <a class="card" href="google.html"
            data-total="2274" data-categorized="1606"
            data-name-zh="Google" data-name-en="Google"
-           style="--heat: 1.000;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/google.com" alt="Google" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">G</div></div>
+           style="--heat: 1.000; --brand: #4285F4;">
+          <div class="card-logo"><img src="logos/google.svg" alt="Google" loading="lazy" onerror="this.parentElement.classList.add('no-logo')"></div>
           <div class="card-body">
             <div class="card-title">Google</div>
             <div class="card-meta">
@@ -306,8 +308,8 @@
         <a class="card" href="amazon.html"
            data-total="1957" data-categorized="1389"
            data-name-zh="Amazon" data-name-en="Amazon"
-           style="--heat: 0.861;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/amazon.com" alt="Amazon" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">A</div></div>
+           style="--heat: 0.861; --brand: #FF9900;">
+          <div class="card-logo no-logo"><span class="mono">A</span></div>
           <div class="card-body">
             <div class="card-title">Amazon</div>
             <div class="card-meta">
@@ -324,8 +326,8 @@
         <a class="card" href="microsoft.html"
            data-total="1374" data-categorized="995"
            data-name-zh="Microsoft" data-name-en="Microsoft"
-           style="--heat: 0.604;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/microsoft.com" alt="Microsoft" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">M</div></div>
+           style="--heat: 0.604; --brand: #00A4EF;">
+          <div class="card-logo no-logo"><span class="mono">M</span></div>
           <div class="card-body">
             <div class="card-title">Microsoft</div>
             <div class="card-meta">
@@ -342,8 +344,8 @@
         <a class="card" href="meta.html"
            data-total="1366" data-categorized="965"
            data-name-zh="Meta" data-name-en="Meta"
-           style="--heat: 0.601;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/meta.com" alt="Meta" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">M</div></div>
+           style="--heat: 0.601; --brand: #0866FF;">
+          <div class="card-logo"><img src="logos/meta.svg" alt="Meta" loading="lazy" onerror="this.parentElement.classList.add('no-logo')"></div>
           <div class="card-body">
             <div class="card-title">Meta</div>
             <div class="card-meta">
@@ -360,8 +362,8 @@
         <a class="card" href="apple.html"
            data-total="303" data-categorized="228"
            data-name-zh="Apple" data-name-en="Apple"
-           style="--heat: 0.133;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/apple.com" alt="Apple" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">A</div></div>
+           style="--heat: 0.133; --brand: #000000;">
+          <div class="card-logo"><img src="logos/apple.svg" alt="Apple" loading="lazy" onerror="this.parentElement.classList.add('no-logo')"></div>
           <div class="card-body">
             <div class="card-title">Apple</div>
             <div class="card-meta">
@@ -378,8 +380,8 @@
         <a class="card" href="bloomberg.html"
            data-total="1190" data-categorized="832"
            data-name-zh="Bloomberg" data-name-en="Bloomberg"
-           style="--heat: 0.523;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/bloomberg.com" alt="Bloomberg" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">B</div></div>
+           style="--heat: 0.523; --brand: #000000;">
+          <div class="card-logo no-logo"><span class="mono">B</span></div>
           <div class="card-body">
             <div class="card-title">Bloomberg</div>
             <div class="card-meta">
@@ -396,8 +398,8 @@
         <a class="card" href="uber.html"
            data-total="366" data-categorized="311"
            data-name-zh="Uber" data-name-en="Uber"
-           style="--heat: 0.161;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/uber.com" alt="Uber" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">U</div></div>
+           style="--heat: 0.161; --brand: #000000;">
+          <div class="card-logo"><img src="logos/uber.svg" alt="Uber" loading="lazy" onerror="this.parentElement.classList.add('no-logo')"></div>
           <div class="card-body">
             <div class="card-title">Uber</div>
             <div class="card-meta">
@@ -414,8 +416,8 @@
         <a class="card" href="tiktok.html"
            data-total="359" data-categorized="309"
            data-name-zh="TikTok" data-name-en="TikTok"
-           style="--heat: 0.158;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/tiktok.com" alt="TikTok" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">T</div></div>
+           style="--heat: 0.158; --brand: #000000;">
+          <div class="card-logo"><img src="logos/tiktok.svg" alt="TikTok" loading="lazy" onerror="this.parentElement.classList.add('no-logo')"></div>
           <div class="card-body">
             <div class="card-title">TikTok</div>
             <div class="card-meta">
@@ -432,8 +434,8 @@
         <a class="card" href="linkedin.html"
            data-total="178" data-categorized="146"
            data-name-zh="LinkedIn" data-name-en="LinkedIn"
-           style="--heat: 0.078;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/linkedin.com" alt="LinkedIn" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">L</div></div>
+           style="--heat: 0.078; --brand: #0A66C2;">
+          <div class="card-logo no-logo"><span class="mono">L</span></div>
           <div class="card-body">
             <div class="card-title">LinkedIn</div>
             <div class="card-meta">
@@ -450,8 +452,8 @@
         <a class="card" href="oracle.html"
            data-total="323" data-categorized="262"
            data-name-zh="Oracle" data-name-en="Oracle"
-           style="--heat: 0.142;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/oracle.com" alt="Oracle" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">O</div></div>
+           style="--heat: 0.142; --brand: #F80000;">
+          <div class="card-logo no-logo"><span class="mono">O</span></div>
           <div class="card-body">
             <div class="card-title">Oracle</div>
             <div class="card-meta">
@@ -468,8 +470,8 @@
         <a class="card" href="adobe.html"
            data-total="156" data-categorized="118"
            data-name-zh="Adobe" data-name-en="Adobe"
-           style="--heat: 0.069;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/adobe.com" alt="Adobe" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">A</div></div>
+           style="--heat: 0.069; --brand: #FF0000;">
+          <div class="card-logo no-logo"><span class="mono">A</span></div>
           <div class="card-body">
             <div class="card-title">Adobe</div>
             <div class="card-meta">
@@ -486,8 +488,8 @@
         <a class="card" href="nvidia.html"
            data-total="133" data-categorized="104"
            data-name-zh="NVIDIA" data-name-en="NVIDIA"
-           style="--heat: 0.058;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/nvidia.com" alt="NVIDIA" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">N</div></div>
+           style="--heat: 0.058; --brand: #76B900;">
+          <div class="card-logo"><img src="logos/nvidia.svg" alt="NVIDIA" loading="lazy" onerror="this.parentElement.classList.add('no-logo')"></div>
           <div class="card-body">
             <div class="card-title">NVIDIA</div>
             <div class="card-meta">
@@ -504,8 +506,8 @@
         <a class="card" href="goldman-sachs.html"
            data-total="259" data-categorized="210"
            data-name-zh="Goldman Sachs" data-name-en="Goldman Sachs"
-           style="--heat: 0.114;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/goldmansachs.com" alt="Goldman Sachs" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">G</div></div>
+           style="--heat: 0.114; --brand: #7399C6;">
+          <div class="card-logo"><img src="logos/goldman-sachs.svg" alt="Goldman Sachs" loading="lazy" onerror="this.parentElement.classList.add('no-logo')"></div>
           <div class="card-body">
             <div class="card-title">Goldman Sachs</div>
             <div class="card-meta">
@@ -522,8 +524,8 @@
         <a class="card" href="salesforce.html"
            data-total="187" data-categorized="150"
            data-name-zh="Salesforce" data-name-en="Salesforce"
-           style="--heat: 0.082;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/salesforce.com" alt="Salesforce" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">S</div></div>
+           style="--heat: 0.082; --brand: #00A1E0;">
+          <div class="card-logo no-logo"><span class="mono">S</span></div>
           <div class="card-body">
             <div class="card-title">Salesforce</div>
             <div class="card-meta">
@@ -540,8 +542,8 @@
         <a class="card" href="doordash.html"
            data-total="80" data-categorized="68"
            data-name-zh="Doordash" data-name-en="Doordash"
-           style="--heat: 0.035;">
-          <div class="card-logo"><img src="https://logo.clearbit.com/doordash.com" alt="Doordash" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="logo-fallback">D</div></div>
+           style="--heat: 0.035; --brand: #EB1700;">
+          <div class="card-logo"><img src="logos/doordash.svg" alt="Doordash" loading="lazy" onerror="this.parentElement.classList.add('no-logo')"></div>
           <div class="card-body">
             <div class="card-title">Doordash</div>
             <div class="card-meta">
