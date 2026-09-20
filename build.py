@@ -663,8 +663,10 @@ def build_company(company, id_to_cats, titles, basics, ratings):
 
     problem_list = list(problems.values())
 
+    display = COMPANY_DISPLAY.get(company, company.replace('-', ' ').title())
     data = {
         'company': company,
+        'company_display': display,
         'problems': problem_list,
         'main_categories': get_main_categories(),
         'subcat_order': get_subcat_order(),
@@ -672,7 +674,8 @@ def build_company(company, id_to_cats, titles, basics, ratings):
     }
 
     html = (HTML_TEMPLATE
-            .replace('__COMPANY__', company.title())
+            .replace('__COMPANY__', display)
+            .replace('__COMPANY_SLUG__', company)
             .replace('__DATA__', json.dumps(data, ensure_ascii=False, separators=(',', ':'))))
 
     out_path = OUT_DIR / f'{company}.html'
@@ -752,228 +755,372 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <meta charset="utf-8">
 <title>__COMPANY__ LeetCode 高频题 · 灵神分类</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111827">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg: #f4f7fb;
+    --surface: #ffffff;
+    --surface-soft: #f8fafc;
+    --text: #172033;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --accent: #4f46e5;
+    --accent-strong: #4338ca;
+    --accent-soft: #eef2ff;
+    --shadow: 0 12px 32px rgba(15, 23, 42, 0.07);
+  }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", "Helvetica Neue", sans-serif;
-    background: #f6f7f9;
-    color: #222;
+    min-height: 100vh;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
+    background:
+      radial-gradient(circle at 12% -12%, rgba(99, 102, 241, 0.13), transparent 28rem),
+      var(--bg);
+    color: var(--text);
   }
+  button, input, select { font: inherit; }
   header {
-    background: #1a1a2e;
+    min-height: 108px;
+    padding: 20px clamp(20px, 4vw, 64px);
+    display: flex;
+    align-items: center;
+    gap: 18px;
     color: #fff;
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
+    background:
+      radial-gradient(circle at 82% -50%, rgba(129, 140, 248, 0.65), transparent 24rem),
+      linear-gradient(135deg, #111827 0%, #1e1b4b 58%, #312e81 100%);
+    box-shadow: 0 12px 30px rgba(30, 27, 75, 0.2);
   }
-  header h1 { margin: 0; font-size: 18px; font-weight: 600; }
-  header .subtitle { color: #b8b9c9; font-size: 13px; }
-  .controls {
-    background: #fff;
-    padding: 12px 20px;
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    align-items: center;
-    border-bottom: 1px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-    z-index: 10;
+  .company-mark {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
   }
-  .controls label { font-size: 13px; color: #555; }
-  .controls select, .controls input[type=text] {
-    padding: 6px 10px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 13px;
-    background: #fff;
-  }
-  .controls input[type=text] { width: 200px; }
-  .diff-btns { display: inline-flex; gap: 4px; }
-  .diff-btn {
-    padding: 5px 10px;
-    border: 1px solid #d1d5db;
-    background: #fff;
-    border-radius: 6px;
+  .company-mark img { width: 40px; height: 40px; object-fit: contain; }
+  .company-mark span { display: none; font-size: 20px; font-weight: 800; color: var(--accent); }
+  .company-mark.no-logo img { display: none; }
+  .company-mark.no-logo span { display: block; }
+  .header-copy { min-width: 0; }
+  header h1 { margin: 0; font-size: clamp(20px, 2vw, 27px); font-weight: 750; letter-spacing: -0.03em; }
+  header .subtitle { margin-top: 7px; color: #cbd5e1; font-size: 13px; }
+  header .subtitle a { color: #fff; font-weight: 600; text-decoration: none; }
+  header .subtitle a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .header-actions { margin-left: auto; }
+  .lang-btn {
+    min-width: 48px;
+    padding: 9px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
     cursor: pointer;
     font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: background 160ms ease, transform 160ms ease;
   }
-  .diff-btn.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
-  .lang-btn {
-    padding: 6px 14px;
-    border: 1px solid rgba(255,255,255,0.3);
+  .lang-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-1px); }
+  .filter-deck {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    backdrop-filter: blur(16px);
+  }
+  .controls {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 12px clamp(16px, 3vw, 34px) 10px;
+    display: flex;
+    gap: 10px 14px;
+    flex-wrap: wrap;
+    align-items: end;
+  }
+  .control-field { display: grid; gap: 6px; }
+  .control-label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .controls select, .controls input[type=text] {
+    height: 36px;
+    padding: 0 11px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14px;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .controls select:focus, .controls input[type=text]:focus {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+  }
+  .search-field { flex: 1 1 190px; max-width: 280px; }
+  .search-field input { width: 100%; }
+  .diff-btns {
+    display: inline-flex;
+    height: 36px;
+    padding: 3px;
+    gap: 2px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface-soft);
+  }
+  .diff-btn {
+    padding: 0 10px;
+    border: 0;
+    border-radius: 7px;
     background: transparent;
-    color: #fff;
-    border-radius: 6px;
+    color: var(--muted);
     cursor: pointer;
     font-size: 12px;
     font-weight: 600;
-    letter-spacing: 0.05em;
+    transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease;
   }
-  .lang-btn:hover { background: rgba(255,255,255,0.1); }
-  .layout { display: flex; min-height: calc(100vh - 108px); }
-  .sidebar {
-    width: 240px;
+  .diff-btn:hover { color: var(--text); }
+  .diff-btn.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12); }
+  .diff-btn[data-d="Easy"].active { color: #15803d; }
+  .diff-btn[data-d="Medium"].active { color: #b45309; }
+  .diff-btn[data-d="Hard"].active { color: #dc2626; }
+  .toggle-group { display: flex; min-height: 36px; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .toggle-control { display: inline-flex; gap: 7px; align-items: center; color: #475569; cursor: pointer; font-size: 12px; font-weight: 600; }
+  .toggle-control input { position: absolute; opacity: 0; pointer-events: none; }
+  .toggle-track {
+    position: relative;
+    width: 34px;
+    height: 20px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: #cbd5e1;
+    transition: background 160ms ease;
+  }
+  .toggle-track::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
     background: #fff;
-    border-right: 1px solid #e5e7eb;
-    padding: 12px 0;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+    transition: transform 160ms ease;
+  }
+  .toggle-control input:checked + .toggle-track { background: var(--accent); }
+  .toggle-control input:checked + .toggle-track::after { transform: translateX(14px); }
+  .toggle-control input:focus-visible + .toggle-track { outline: 3px solid rgba(99, 102, 241, 0.2); outline-offset: 2px; }
+  .stats-bar {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 3vw, 34px) 10px;
+    display: flex;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .stat-item { display: inline-flex; gap: 6px; align-items: baseline; padding: 5px 9px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-soft); }
+  .stat-item strong { color: var(--text); font-family: "JetBrains Mono", monospace; font-size: 12px; }
+  .layout {
+    width: min(1600px, 100%);
+    min-height: calc(100vh - 210px);
+    margin: 0 auto;
+    padding: 22px clamp(16px, 3vw, 34px) 56px;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 22px;
+    align-items: start;
+  }
+  .sidebar {
+    max-height: calc(100vh - 165px);
+    padding: 8px;
     overflow-y: auto;
     position: sticky;
-    top: 57px;
-    height: calc(100vh - 57px);
-    flex-shrink: 0;
+    top: 145px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: var(--shadow);
   }
   .cat-item {
-    padding: 8px 20px;
-    cursor: pointer;
-    font-size: 14px;
+    min-height: 38px;
+    padding: 9px 10px 9px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-left: 3px solid transparent;
+    gap: 10px;
+    border-radius: 10px;
+    color: #475569;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 140ms ease, color 140ms ease, transform 140ms ease;
   }
-  .cat-item:hover { background: #f3f4f6; }
-  .cat-item.active { background: #eef2ff; border-left-color: #4f46e5; font-weight: 600; }
-  .cat-count { color: #9ca3af; font-size: 12px; }
-  .main { flex: 1; padding: 20px; overflow-x: auto; }
+  .cat-item:hover { background: var(--surface-soft); color: var(--text); transform: translateX(2px); }
+  .cat-item.active { background: var(--accent-soft); color: var(--accent-strong); font-weight: 700; }
+  .cat-count { min-width: 26px; padding: 2px 6px; border-radius: 999px; background: #f1f5f9; color: #94a3b8; font-family: "JetBrains Mono", monospace; font-size: 11px; text-align: center; }
+  .cat-item.active .cat-count { background: rgba(79, 70, 229, 0.1); color: var(--accent); }
+  .main { min-width: 0; }
+  .category-title {
+    margin: 8px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #111827;
+    font-size: 21px;
+    font-weight: 750;
+    letter-spacing: -0.03em;
+  }
+  .category-total { padding: 4px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0; }
   .subcat-block { margin-bottom: 28px; }
   .subcat-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin: 0 0 8px;
-    color: #374151;
-    padding-bottom: 4px;
-    border-bottom: 2px solid #e5e7eb;
+    margin: 0 2px 9px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 700;
   }
-  .subcat-title .cnt { font-weight: normal; color: #9ca3af; font-size: 13px; margin-left: 8px; }
+  .subcat-title::before { content: ''; width: 4px; height: 16px; border-radius: 999px; background: linear-gradient(#818cf8, #4f46e5); }
+  .subcat-title .cnt { padding: 2px 7px; border-radius: 999px; background: #e2e8f0; color: var(--muted); font-size: 11px; font-weight: 600; }
   table {
     width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 6px;
     overflow: hidden;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    font-size: 13px;
+    border: 1px solid var(--border);
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.045);
+    font-size: 14px;
   }
-  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #f3f4f6; }
-  th { background: #f9fafb; font-weight: 600; color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; }
-  tr:hover td { background: #fafbfc; }
-  td.id { color: #9ca3af; font-family: "SF Mono", Menlo, monospace; width: 70px; }
-  td.title a { color: #1f2937; text-decoration: none; }
-  td.title a:hover { color: #4f46e5; text-decoration: underline; }
-  .diff { padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-  .diff-Easy { background: #dcfce7; color: #166534; }
-  .diff-Medium { background: #fef3c7; color: #92400e; }
-  .diff-Hard { background: #fee2e2; color: #991b1b; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #edf1f6; }
+  th { background: var(--surface-soft); color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr td { transition: background 130ms ease; }
+  tbody tr:hover td { background: #f8faff; }
+  .col-id, td.id { width: 70px; }
+  .col-diff { width: 92px; }
+  .col-rating { width: 92px; }
+  .col-freq { width: 118px; }
+  .col-acc { width: 100px; }
+  .col-cat { width: 28%; }
+  td.id { color: #94a3b8; font-family: "JetBrains Mono", monospace; font-size: 12px; }
+  td.title { overflow-wrap: anywhere; }
+  td.title a { color: #1e293b; font-weight: 600; line-height: 1.45; text-decoration: none; }
+  td.title a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .diff { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .diff-Easy { background: #dcfce7; color: #15803d; }
+  .diff-Medium { background: #fff7d6; color: #a16207; }
+  .diff-Hard { background: #fee2e2; color: #dc2626; }
   .col-rating { display: none; }
   body.show-rating .col-rating { display: table-cell; }
-  .rating-score { font-family: "SF Mono", Menlo, monospace; font-weight: 600; color: #4f46e5; }
-  .rating-na { color: #d1d5db; }
-  td.freq { font-variant-numeric: tabular-nums; }
-  .freq-bar {
-    display: inline-block;
-    height: 6px;
-    background: #4f46e5;
-    border-radius: 3px;
-    vertical-align: middle;
-    margin-right: 6px;
-  }
-  .empty { text-align: center; padding: 40px; color: #9ca3af; }
-  .stats-bar {
-    background: #fff;
-    padding: 8px 20px;
-    border-bottom: 1px solid #e5e7eb;
-    font-size: 13px;
-    color: #6b7280;
-  }
-  .stats-bar strong { color: #1f2937; }
-  .cat-tags { font-size: 11px; color: #9ca3af; }
-  .cat-tag { display: inline-block; padding: 1px 6px; background: #f3f4f6; border-radius: 3px; margin-right: 4px; }
-  tr.basic td { background: #fefce8; }
-  tr.basic:hover td { background: #fef9c3; }
-  .star { color: #eab308; margin-right: 4px; }
-  .basic-src { font-size: 10px; color: #ca8a04; margin-left: 6px; }
+  .rating-score { color: var(--accent); font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 600; }
+  .rating-na { color: #cbd5e1; }
+  td.freq { color: #475569; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .freq-bar { display: inline-block; height: 5px; margin-right: 7px; border-radius: 999px; background: linear-gradient(90deg, #818cf8, #4f46e5); vertical-align: middle; }
+  .cat-tags { color: #94a3b8; font-size: 11px; }
+  .cat-tag { display: inline-block; margin: 2px 3px 2px 0; padding: 3px 6px; border-radius: 6px; background: #f1f5f9; }
+  tr.basic td { background: #fffdf3; }
+  tr.basic:hover td { background: #fff9db; }
+  .star { margin-right: 5px; color: #eab308; }
+  .basic-src { margin-left: 7px; color: #b88708; font-size: 11px; }
+  .empty { padding: 64px 24px; border: 1px dashed #cbd5e1; border-radius: 16px; background: rgba(255, 255, 255, 0.65); color: var(--muted); text-align: center; }
 
-  /* ---------------- Mobile ---------------- */
   @media (max-width: 768px) {
-    header {
-      padding: 10px 14px; gap: 8px;
-    }
-    header h1 { font-size: 14px; line-height: 1.3; }
+    header { min-height: 84px; padding: 14px 16px; gap: 11px; }
+    .company-mark { width: 48px; height: 48px; border-radius: 14px; }
+    .company-mark img { width: 30px; height: 30px; }
+    header h1 { overflow: hidden; font-size: 16px; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
     .subtitle { display: none; }
-    .lang-btn { padding: 5px 10px; font-size: 11px; }
-
-    .controls {
-      padding: 10px 14px;
-      gap: 8px 12px;
-      font-size: 12px;
-    }
-    .controls label { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; }
-    .controls select, .controls input[type=text] {
-      padding: 5px 8px; font-size: 12px;
-    }
-    .controls input[type=text] { width: 130px; }
-    .diff-btn { padding: 4px 8px; font-size: 11px; }
-
-    .stats-bar { padding: 6px 14px; font-size: 11px; }
-
-    /* Sidebar becomes a horizontal chip scroller */
-    .layout { flex-direction: column; }
+    .lang-btn { min-width: 42px; padding: 7px 10px; }
+    .filter-deck { position: relative; }
+    .controls { padding: 12px 14px 10px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; }
+    .control-field { min-width: 0; }
+    .controls select, .controls input[type=text] { width: 100%; }
+    .search-field { max-width: none; }
+    .diff-btns { width: 100%; }
+    .diff-btn { flex: 1; padding: 0 5px; }
+    .toggle-group { grid-column: 1 / -1; min-height: 30px; gap: 12px; }
+    .stats-bar { padding: 0 14px 11px; overflow-x: auto; scrollbar-width: none; }
+    .stats-bar::-webkit-scrollbar { display: none; }
+    .stat-item { flex: 0 0 auto; }
+    .layout { padding: 14px 0 40px; display: block; }
     .sidebar {
       width: 100%;
-      height: auto;
+      max-height: none;
+      margin: 0 0 16px;
       position: sticky;
       top: 0;
-      border-right: none;
-      border-bottom: 1px solid #e5e7eb;
-      padding: 8px 12px;
+      z-index: 10;
+      padding: 9px 14px;
       display: flex;
       gap: 6px;
+      border-width: 1px 0;
+      border-radius: 0;
       overflow-x: auto;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+      backdrop-filter: blur(12px);
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
-      z-index: 5;
     }
     .sidebar::-webkit-scrollbar { display: none; }
     .cat-item {
-      padding: 6px 12px;
+      min-height: 32px;
+      padding: 6px 10px;
       white-space: nowrap;
-      border-left: none;
-      border-radius: 100px;
-      background: #f3f4f6;
-      font-size: 12px;
       flex-shrink: 0;
-      gap: 6px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      font-size: 12px;
     }
-    .cat-item:hover { background: #e5e7eb; }
-    .cat-item.active {
-      background: #4f46e5; color: #fff;
-      border-left: none;
-    }
-    .cat-item.active .cat-count { color: rgba(255,255,255,0.7); }
-
-    .main { padding: 14px; }
-    .main > div > h2 { font-size: 16px !important; margin: 10px 0 8px !important; }
-    .subcat-block { margin-bottom: 20px; }
+    .cat-item:hover { transform: none; }
+    .cat-item.active { background: var(--accent); color: #fff; }
+    .cat-item.active .cat-count { background: rgba(255, 255, 255, 0.16); color: rgba(255, 255, 255, 0.85); }
+    .main { padding: 0 14px; }
+    .category-title { margin: 10px 0 12px; font-size: 18px; }
+    .subcat-block { margin-bottom: 22px; }
     .subcat-title { font-size: 13px; }
-    .subcat-title .cnt { font-size: 11px; }
-
-    /* Compact table: hide acceptance + category tags columns */
-    table { font-size: 12px; border-radius: 4px; }
-    th, td { padding: 6px 8px; }
-    th { font-size: 10px; }
-    td.id { width: 40px; font-size: 11px; }
+    table { border-radius: 12px; font-size: 13px; }
+    th, td { padding: 8px; }
+    th { font-size: 11px; }
+    .col-id, td.id { width: 48px; }
+    .col-diff { width: 84px; }
+    .col-rating { width: 88px; }
+    .col-freq { width: 92px; }
+    td.id { font-size: 11px; }
     .cat-tags, th.col-cat, td.col-cat { display: none; }
     th.col-acc, td.col-acc { display: none; }
     .freq-bar { display: none; }
-    .diff { padding: 1px 6px; font-size: 10px; }
     .basic-src { display: none; }
   }
   @media (max-width: 420px) {
-    /* Very narrow: drop difficulty column too, use dot */
+    .controls { grid-template-columns: 1fr; }
+    .toggle-group { grid-column: auto; }
+    .toggle-control { font-size: 12px; }
+    .stats-bar { gap: 6px; }
+    .stat-item { padding: 4px 7px; }
     th.col-diff, td.col-diff { display: none; }
     td.title::before { content: ''; display: inline-block; }
     tr.easy-row td.title::before,
@@ -989,50 +1136,62 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 </head>
 <body>
 <header>
-  <h1 id="page-title">__COMPANY__ LeetCode 高频题 · 灵神分类</h1>
-  <span class="subtitle" id="page-subtitle">分类参考自 灵茶山艾府 (0x3F) 题单 · <a href="index.html" style="color:#a3a4b8;text-decoration:underline;" id="back-link">← 换公司</a></span>
-  <span style="margin-left:auto;">
+  <div class="company-mark">
+    <img src="logos/__COMPANY_SLUG__.svg" alt="__COMPANY__" onerror="this.parentElement.classList.add('no-logo')">
+    <span>__COMPANY__</span>
+  </div>
+  <div class="header-copy">
+    <h1 id="page-title">__COMPANY__ LeetCode 高频题 · 灵神分类</h1>
+    <div class="subtitle" id="page-subtitle">分类参考自 灵茶山艾府 (0x3F) 题单 · <a href="index.html" id="back-link">← 换公司</a></div>
+  </div>
+  <div class="header-actions">
     <button class="lang-btn" id="lang-btn">EN</button>
-  </span>
+  </div>
 </header>
-<div class="controls">
-  <label><span class="l-tf">时间段:</span>
-    <select id="timeframe">
-      <option value="6m" class="tf-6m">最近 6 个月</option>
-      <option value="30d" class="tf-30d">最近 30 天</option>
-      <option value="3m" class="tf-3m">最近 3 个月</option>
-      <option value="6m_plus" class="tf-6mp">6 个月以前</option>
-      <option value="all" class="tf-all" selected>全部</option>
-    </select>
-  </label>
-  <label><span class="l-diff">难度:</span>
-    <span class="diff-btns" id="diff-btns">
-      <button class="diff-btn active" data-d="all"><span class="l-all">全部</span></button>
-      <button class="diff-btn" data-d="Easy">Easy</button>
-      <button class="diff-btn" data-d="Medium">Medium</button>
-      <button class="diff-btn" data-d="Hard">Hard</button>
-    </span>
-  </label>
-  <label><span class="l-freq">最小频率:</span>
-    <select id="min-freq">
-      <option value="0" class="mf-0">无限制</option>
-      <option value="10">≥ 10%</option>
-      <option value="25">≥ 25%</option>
-      <option value="50">≥ 50%</option>
-      <option value="75">≥ 75%</option>
-    </select>
-  </label>
-  <label><span class="l-search">搜索:</span> <input type="text" id="search" placeholder="题目/ID"></label>
-  <label style="display:inline-flex;align-items:center;gap:6px;">
-    <input type="checkbox" id="basic-only">
-    <span class="l-basic">仅显示基础题 ★</span>
-  </label>
-  <label style="display:inline-flex;align-items:center;gap:6px;">
-    <input type="checkbox" id="show-rating">
-    <span class="l-rating-toggle">显示周赛难度分</span>
-  </label>
+<div class="filter-deck">
+  <div class="controls">
+    <label class="control-field"><span class="control-label l-tf">时间段</span>
+      <select id="timeframe">
+        <option value="30d" class="tf-30d">最近 30 天</option>
+        <option value="3m" class="tf-3m">最近 3 个月</option>
+        <option value="6m" class="tf-6m">最近 6 个月</option>
+        <option value="6m_plus" class="tf-6mp">6 个月以前</option>
+        <option value="all" class="tf-all" selected>全部</option>
+      </select>
+    </label>
+    <label class="control-field"><span class="control-label l-diff">难度</span>
+      <span class="diff-btns" id="diff-btns">
+        <button class="diff-btn active" data-d="all"><span class="l-all">全部</span></button>
+        <button class="diff-btn" data-d="Easy">Easy</button>
+        <button class="diff-btn" data-d="Medium">Medium</button>
+        <button class="diff-btn" data-d="Hard">Hard</button>
+      </span>
+    </label>
+    <label class="control-field"><span class="control-label l-freq">最小频率</span>
+      <select id="min-freq">
+        <option value="0" class="mf-0">无限制</option>
+        <option value="10">≥ 10%</option>
+        <option value="25">≥ 25%</option>
+        <option value="50">≥ 50%</option>
+        <option value="75">≥ 75%</option>
+      </select>
+    </label>
+    <label class="control-field search-field"><span class="control-label l-search">搜索</span><input type="text" id="search" placeholder="题目/ID"></label>
+    <div class="toggle-group">
+      <label class="toggle-control">
+        <input type="checkbox" id="basic-only">
+        <span class="toggle-track"></span>
+        <span class="l-basic">仅显示基础题 ★</span>
+      </label>
+      <label class="toggle-control">
+        <input type="checkbox" id="show-rating">
+        <span class="toggle-track"></span>
+        <span class="l-rating-toggle">显示周赛难度分</span>
+      </label>
+    </div>
+  </div>
+  <div class="stats-bar" id="stats"></div>
 </div>
-<div class="stats-bar" id="stats"></div>
 <div class="layout">
   <div class="sidebar" id="sidebar"></div>
   <div class="main" id="main"></div>
@@ -1054,11 +1213,11 @@ const state = {
 // UI text bundles
 const UI = {
   zh: {
-    pageTitle: `${DATA.company.charAt(0).toUpperCase() + DATA.company.slice(1)} LeetCode 高频题 · 灵神分类`,
+    pageTitle: `${DATA.company_display || DATA.company} LeetCode 高频题 · 灵神分类`,
     subtitle: '分类参考自 灵茶山艾府 (0x3F) 题单 · ',
     back: '← 换公司',
     langBtn: 'EN',
-    timeframe: '时间段:', difficulty: '难度:', minFreq: '最小频率:', search: '搜索:',
+    timeframe: '时间段', difficulty: '难度', minFreq: '最小频率', search: '搜索',
     basic: '仅显示基础题 ★',
     basicHint: '基础题 = Blind 75 / Grind 75 / NeetCode 250 / LC 75 / Top 100 / Interview 150 的并集',
     ratingToggle: '显示周赛难度分',
@@ -1068,15 +1227,15 @@ const UI = {
     searchPh: '题目/ID',
     colId: '#', colTitle: '题目', colDiff: '难度', colRating: '难度分', colFreq: '频率', colAcc: '通过率', colCat: '分类',
     allCats: '全部分类', empty: '没有符合条件的题目',
-    stats: (t, m, u) => `共 <strong>${t}</strong> 题 · 当前筛选匹配 <strong>${m}</strong> 题 · 未分类 <strong>${u}</strong> 题`,
+    stats: (t, m, u) => `<span class="stat-item"><span>题库</span><strong>${t}</strong></span><span class="stat-item"><span>当前匹配</span><strong>${m}</strong></span><span class="stat-item"><span>未分类</span><strong>${u}</strong></span>`,
     problemsCount: (n) => `${n} 题`,
   },
   en: {
-    pageTitle: `${DATA.company.charAt(0).toUpperCase() + DATA.company.slice(1)} LeetCode High-Frequency · Categorized`,
+    pageTitle: `${DATA.company_display || DATA.company} LeetCode High-Frequency · Categorized`,
     subtitle: 'Categories from 灵茶山艾府 (0x3F) · ',
     back: '← Switch company',
     langBtn: '中',
-    timeframe: 'Period:', difficulty: 'Difficulty:', minFreq: 'Min Freq:', search: 'Search:',
+    timeframe: 'Period', difficulty: 'Difficulty', minFreq: 'Min Freq', search: 'Search',
     basic: 'Basics only ★',
     basicHint: 'Basics = union of Blind 75 / Grind 75 / NeetCode 250 / LC 75 / Top 100 / Interview 150',
     ratingToggle: 'Show contest rating',
@@ -1086,7 +1245,7 @@ const UI = {
     searchPh: 'Title / ID',
     colId: '#', colTitle: 'Title', colDiff: 'Difficulty', colRating: 'Rating', colFreq: 'Frequency', colAcc: 'Acceptance', colCat: 'Category',
     allCats: 'All Categories', empty: 'No problems match the current filters',
-    stats: (t, m, u) => `Total <strong>${t}</strong> · Matched <strong>${m}</strong> · Uncategorized <strong>${u}</strong>`,
+    stats: (t, m, u) => `<span class="stat-item"><span>Library</span><strong>${t}</strong></span><span class="stat-item"><span>Matched</span><strong>${m}</strong></span><span class="stat-item"><span>Uncategorized</span><strong>${u}</strong></span>`,
     problemsCount: (n) => `${n} problems`,
   },
 };
@@ -1198,8 +1357,13 @@ function renderMain(idx) {
     const catBlock = document.createElement('div');
     if (!state.activeCat) {
       const h = document.createElement('h2');
-      h.style.cssText = 'font-size:20px;margin:16px 0 12px;color:#1a1a2e;';
-      h.textContent = `${tCat(mc)} (${idx[mc]._all.length})`;
+      h.className = 'category-title';
+      const label = document.createElement('span');
+      label.textContent = tCat(mc);
+      const count = document.createElement('span');
+      count.className = 'category-total';
+      count.textContent = idx[mc]._all.length;
+      h.append(label, count);
       catBlock.appendChild(h);
     }
     // Preserve 灵神's original subcategory order; append any unknown at end.
@@ -1227,7 +1391,7 @@ function buildTable(problems) {
   const tbl = document.createElement('table');
   const l = t();
   tbl.innerHTML = `<thead><tr>
-    <th>${l.colId}</th><th>${l.colTitle}</th>
+    <th class="col-id">${l.colId}</th><th class="col-title">${l.colTitle}</th>
     <th class="col-diff">${l.colDiff}</th>
     <th class="col-rating">${l.colRating}</th>
     <th class="col-freq">${l.colFreq}</th>
