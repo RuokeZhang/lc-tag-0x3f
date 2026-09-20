@@ -7,11 +7,17 @@ and switches problem links between `leetcode.cn` and `leetcode.com`.
 
 ## Files
 
-- `build.py` — generator. Reads `../<company>/*.csv` and outputs `<company>.html`.
+- `build.py` — generator. Reads `../<company>/*.csv` and writes into
+  `leetcode/<company>.html`.
+- `fetch_basics.py` — fetches Blind 75, Grind 75, NeetCode 250, LC 75, Top 100,
+  Top Interview 150 into `basics.json`.
 - `lc_titles.json` — cached zh/en title + slug for every LC problem, fetched
   from `leetcode.cn/graphql/`.
-- `index.html` — landing page linking to each company's page.
-- `<company>.html` — self-contained page (data + JS embedded).
+- `index.html` (repo root) — 302 to `/leetcode/`.
+- `leetcode/index.html` — landing page linking to each company's page.
+- `leetcode/<company>.html` — self-contained page (data + JS embedded).
+- Deployed to `ruokezhang.com` via GitHub Pages; served at
+  `ruokezhang.com/leetcode/`.
 
 ## Rebuild
 

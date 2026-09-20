@@ -17,6 +17,7 @@ from collections import defaultdict
 
 BASE = Path(__file__).parent
 REPO_ROOT = BASE.parent
+OUT_DIR = BASE / 'leetcode'  # deployed under ruokezhang.com/leetcode/
 
 DEFAULT_COMPANIES = ['google', 'bloomberg', 'meta']
 
@@ -601,7 +602,7 @@ def build_company(company, id_to_cats, titles, basics):
             .replace('__COMPANY__', company.title())
             .replace('__DATA__', json.dumps(data, ensure_ascii=False, separators=(',', ':'))))
 
-    out_path = BASE / f'{company}.html'
+    out_path = OUT_DIR / f'{company}.html'
     out_path.write_text(html, encoding='utf-8')
     categorized = sum(1 for p in problem_list if p['categories'])
     print(f"[ok] {company}: {len(problem_list)} problems ({categorized} categorized) -> {out_path.name}")
@@ -624,12 +625,13 @@ def build_index(stats):
           <div class="card-sub"></div>
         </a>""")
     html = INDEX_TEMPLATE.replace('__CARDS__', '\n'.join(cards))
-    (BASE / 'index.html').write_text(html, encoding='utf-8')
-    print(f"[ok] index.html")
+    (OUT_DIR / 'index.html').write_text(html, encoding='utf-8')
+    print(f"[ok] leetcode/index.html")
 
 
 def main():
     companies = sys.argv[1:] or DEFAULT_COMPANIES
+    OUT_DIR.mkdir(exist_ok=True)
     id_to_cats = build_id_to_categories()
     titles = load_titles()
     basics = load_basics()
