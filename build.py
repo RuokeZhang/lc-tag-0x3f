@@ -49,6 +49,132 @@ LABELS_EN = {
     # merged parents (used as subcategory prefix)
     '一般树': 'General Tree',
     '网格图': 'Grid',
+    # ---------- subcategories ----------
+    # 链表
+    '遍历链表': 'Traverse', '删除节点': 'Delete Node', '插入节点': 'Insert Node',
+    '反转链表': 'Reverse', '前后指针': 'Prev/Next Pointer', '快慢指针': 'Fast/Slow Pointer',
+    '双指针': 'Two Pointers', '合并链表': 'Merge', '分治': 'Divide & Conquer',
+    '综合应用': 'Combined', '其他': 'Other',
+    # 二叉树
+    '遍历二叉树': 'Traversal', '自顶向下 DFS': 'Top-down DFS', '自底向上 DFS': 'Bottom-up DFS',
+    '自底向上 DFS：删点': 'Bottom-up DFS: Prune', '有递有归': 'Pre & Post Order',
+    '二叉树的直径': 'Diameter', '回溯': 'Backtracking', '最近公共祖先': 'LCA',
+    '二叉搜索树': 'BST', '创建二叉树': 'Build Tree', '插入/删除节点': 'Insert/Delete',
+    '树形 DP': 'Tree DP', '二叉树 BFS': 'BFS', '链表+二叉树': 'List + Tree',
+    'N 叉树': 'N-ary Tree',
+    # 一般树
+    '遍历': 'Traversal', '树的直径': 'Diameter', '树的拓扑排序': 'Topological Sort',
+    'DFS 时间戳': 'DFS Timestamp', '最近公共祖先/倍增': 'LCA / Binary Lifting',
+    '虚树': 'Virtual Tree', '树上启发式合并': 'DSU on Tree',
+    '点分治': 'Centroid Decomposition', '树上滑动窗口': 'Tree Sliding Window',
+    # 回溯
+    '入门回溯': 'Intro', '子集型回溯': 'Subset', '划分型回溯': 'Partition',
+    '组合型回溯': 'Combination', '排列型回溯': 'Permutation',
+    '有重复元素的回溯': 'With Duplicates', '搜索': 'Search',
+    '折半搜索': 'Meet in the Middle',
+    # 滑动窗口/双指针
+    '定长滑窗基础': 'Fixed Window · Basic', '定长滑窗进阶': 'Fixed Window · Advanced',
+    '不定长滑窗 求最长': 'Variable Window · Longest',
+    '不定长滑窗 求最短': 'Variable Window · Shortest',
+    '不定长滑窗 子数组个数': 'Variable Window · Count',
+    '滑窗其他': 'Sliding Window · Other', '反转字符串': 'Reverse String',
+    '相向双指针': 'Opposite-direction', '同向双指针': 'Same-direction',
+    '背向双指针': 'Back-to-back', '原地修改': 'In-place Modification',
+    '矩阵上的双指针': 'Matrix Two Pointers', '双序列双指针': 'Two-sequence',
+    '判断子序列': 'Subsequence Check', '三指针': 'Three Pointers',
+    '分组循环': 'Group Loop',
+    # DP
+    '爬楼梯': 'Climbing Stairs', '打家劫舍': 'House Robber', '最大子数组和': 'Max Subarray',
+    '网格 DP 基础': 'Grid DP · Basic', '网格 DP 进阶': 'Grid DP · Advanced',
+    '0-1 背包': '0-1 Knapsack', '完全背包': 'Unbounded Knapsack',
+    '多重背包': 'Bounded Knapsack', '分组背包': 'Group Knapsack',
+    '树上背包': 'Tree Knapsack', '最长公共子序列 LCS': 'LCS',
+    '最长递增子序列 LIS': 'LIS', '划分型 DP': 'Partition DP',
+    '股票买卖': 'Stock Trading', '状态机 DP': 'State Machine DP',
+    '其他线性 DP': 'Other Linear DP', '多维 DP': 'Multi-dim DP',
+    '区间 DP': 'Interval DP', '状压 DP': 'Bitmask DP', '数位 DP': 'Digit DP',
+    '计数 DP': 'Counting DP', 'DP 优化': 'DP Optimization',
+    '图 DP': 'Graph DP', '博弈 DP': 'Game DP',
+    '概率/期望 DP': 'Probability / Expectation DP',
+    # 二分
+    '二分查找基础': 'Binary Search · Basic', '二分答案 求最小': 'Binary Answer · Min',
+    '二分答案 求最大': 'Binary Answer · Max', '二分间接值': 'Indirect Value',
+    '最小化最大值': 'Minimize Max', '最大化最小值': 'Maximize Min',
+    '第 K 小/大': 'K-th Smallest/Largest', '三分法': 'Ternary Search',
+    '二分其他': 'Binary Search · Other',
+    # 单调栈
+    '基础': 'Basic', '进阶': 'Advanced', '矩形': 'Rectangle',
+    '贡献法': 'Contribution', '最小字典序': 'Lex Smallest',
+    # 数据结构
+    '枚举右维护左': 'Iterate Right, Maintain Left', '枚举中间': 'Iterate Middle',
+    '遍历对角线': 'Diagonal Traversal', '前缀和 基础': 'Prefix Sum · Basic',
+    '前缀和+哈希': 'Prefix Sum + Hash', '距离和': 'Distance Sum',
+    '状压前缀和': 'Bitmask Prefix Sum', '前缀和进阶': 'Prefix Sum · Advanced',
+    '二维前缀和': '2D Prefix Sum', '一维差分': '1D Difference',
+    '二维差分': '2D Difference', '栈 基础': 'Stack · Basic',
+    '栈 进阶': 'Stack · Advanced', '邻项消除': 'Adjacent Elimination',
+    '合法括号': 'Valid Parentheses', '表达式解析': 'Expression Parsing',
+    '对顶栈': 'Opposing Stacks', '队列 基础': 'Queue · Basic',
+    '队列 设计': 'Queue Design', '双端队列': 'Deque',
+    '单调队列': 'Monotonic Queue', '堆基础': 'Heap · Basic',
+    '堆进阶': 'Heap · Advanced', '堆 第K小/大': 'Heap · K-th',
+    '堆 重排': 'Heap · Rearrange', '反悔堆': 'Regret Heap',
+    '懒删除堆': 'Lazy Delete Heap', '对顶堆': 'Two-heap Median',
+    '字典树 基础': 'Trie · Basic', '字典树 进阶': 'Trie · Advanced',
+    '字典树优化DP': 'Trie-optimized DP', '0-1 字典树': '0-1 Trie',
+    '并查集 基础': 'Union-Find · Basic', '并查集 进阶': 'Union-Find · Advanced',
+    '中介并查集': 'Intermediary Union-Find',
+    '数组上的并查集': 'Union-Find on Array', '区间并查集': 'Interval Union-Find',
+    '带权并查集': 'Weighted Union-Find', '树状数组': 'BIT (Fenwick)',
+    '逆序对': 'Inversions', '线段树': 'Segment Tree',
+    '根号算法': 'Sqrt Decomposition', '离线算法': 'Offline Processing',
+    # 图论
+    '图 DFS': 'Graph DFS', '图 BFS': 'Graph BFS',
+    '图论建模 BFS': 'Modeling + BFS', '跳跃游戏': 'Jump Game',
+    '拓扑排序': 'Topological Sort', '拓扑序上DP': 'DP on Topo Order',
+    '基环树': 'Pseudotree', 'Floyd': 'Floyd-Warshall',
+    '最小生成树': 'MST', '欧拉路径': 'Eulerian Path',
+    '强/双连通分量': 'SCC / BCC', '二分图染色': 'Bipartite',
+    '网络流': 'Network Flow', '图论其他': 'Graph · Other',
+    # 网格图 subcategories (after cleanup)
+    'DFS': 'DFS', 'BFS': 'BFS', '0-1 BFS': '0-1 BFS', '综合': 'Combined',
+    # 位运算
+    '异或性质': 'XOR Properties', '与或性质': 'AND/OR Properties',
+    '拆位/贡献法': 'Bit Decomposition', '试填法': 'Greedy Fill',
+    '恒等式': 'Identities', '线性基': 'Linear Basis', '思维': 'Thinking',
+    '位运算其他': 'Bit · Other',
+    # 贪心
+    '从最小/最大开始': 'Sort by Min/Max', '单序列配对': 'Single-sequence Pairing',
+    '双序列配对': 'Two-sequence Pairing', '从最左/最右开始': 'Left/Right First',
+    '划分型贪心': 'Partition Greedy', '先枚举再贪心': 'Enumerate then Greedy',
+    '交换论证法': 'Exchange Argument', '相邻不同': 'Adjacent Different',
+    '反悔贪心': 'Regret Greedy', '不相交区间': 'Non-overlapping Intervals',
+    '区间分组': 'Interval Grouping', '区间选点': 'Interval Point Coverage',
+    '区间覆盖': 'Interval Covering', '合并区间': 'Merge Intervals',
+    '区间其他': 'Intervals · Other', '字符串贪心': 'String Greedy',
+    '回文串贪心': 'Palindrome Greedy', '数学贪心': 'Math Greedy',
+    '从特殊到一般': 'Special to General', '脑筋急转弯': 'Brain Teaser',
+    '等价转化': 'Equivalent Transform', '逆向思维': 'Reverse Thinking',
+    '两次扫描': 'Two-pass Scan', '交换元素': 'Element Swap',
+    '分类讨论': 'Case Analysis', '构造题': 'Constructive',
+    '交互题': 'Interactive', '贪心其他': 'Greedy · Other',
+    # 数学
+    '判断质数': 'Primality Test', '筛质数': 'Prime Sieve',
+    '质因数分解': 'Prime Factorization', '阶乘分解': 'Factorial Decomposition',
+    '因子': 'Divisors', '互质': 'Coprime', '同余': 'Modular Arithmetic',
+    '数论其他': 'Number Theory · Other', '乘法原理': 'Multiplication Principle',
+    '组合计数': 'Combinatorial Counting', '容斥原理': 'Inclusion-Exclusion',
+    '生成函数': 'Generating Function', '概率期望': 'Probability / Expectation',
+    '博弈论': 'Game Theory', '计算几何 点线': 'Geometry · Point/Line',
+    '计算几何 圆': 'Geometry · Circle', '计算几何 矩形': 'Geometry · Rectangle',
+    '凸包': 'Convex Hull', '随机': 'Randomization', '回文数': 'Palindrome Number',
+    '整数拆分': 'Integer Partition', '曼哈顿距离': 'Manhattan Distance',
+    '数学其他': 'Math · Other',
+    # 字符串
+    'Z 函数': 'Z Function', '字符串哈希': 'String Hashing',
+    '最小表示法': 'Minimum Representation', 'AC 自动机': 'Aho-Corasick',
+    '后缀数组': 'Suffix Array', '子序列自动机': 'Subsequence Automaton',
+    '字符串其他': 'String · Other',
 }
 
 # ---------------------------------------------------------------------------
@@ -255,10 +381,10 @@ CATEGORIES = {
         "图论其他": [1042, 1761, 2508, 1579, 2065, 1697, 2242, 2493, 1782, 3666, 2612, 3435, 466, 277, 1724, 2077, 3656],
     },
     "网格图": {
-        "网格图 DFS": [200, 695, 3619, 2658, 463, 892, 733, 1034, 1020, 2684, 1254, 130, 1905, 1391, 1559, 529, 417, 827, 305, 2061, 2852, 489],
-        "网格图 BFS": [1926, 1091, 1162, 542, 994, 3905, 1765, 934, 2146, 1293, 909, 1210, 675, 2812, 749, 1730, 286, 490, 505, 499, 1197, 317, 2814],
+        "DFS": [200, 695, 3619, 2658, 463, 892, 733, 1034, 1020, 2684, 1254, 130, 1905, 1391, 1559, 529, 417, 827, 305, 2061, 2852, 489],
+        "BFS": [1926, 1091, 1162, 542, 994, 3905, 1765, 934, 2146, 1293, 909, 1210, 675, 2812, 749, 1730, 286, 490, 505, 499, 1197, 317, 2814],
         "0-1 BFS": [3286, 2290, 1368, 3552, 1824],
-        "网格综合": [3882, 1631, 2267, 778, 3568, 1036, 864, 1263, 2258, 2556, 2577, 2617, 1778, 694, 711, 1102],
+        "综合": [3882, 1631, 2267, 778, 3568, 1036, 864, 1263, 2258, 2556, 2577, 2617, 1778, 694, 711, 1102],
     },
     "位运算": {
         "基础": [3370, 3827, 3226, 1356, 461, 2220, 1342, 476, 1009, 868, 2917, 2657, 231, 342, 693, 3950, 191, 338, 2595, 2154, 3211, 3690, 190, 4030, 3750, 3769],
@@ -373,10 +499,33 @@ def get_main_categories():
     return seen
 
 
+def get_subcat_order():
+    """{main_cat: [sub_cat, ...]} preserving 灵神's source-order after merging."""
+    order = {}
+    for main_cat, subs in CATEGORIES.items():
+        target = MERGE_MAP.get(main_cat, main_cat)
+        prefix = f"{main_cat}·" if main_cat in MERGE_MAP else ""
+        order.setdefault(target, [])
+        for sub in subs.keys():
+            display = f"{prefix}{sub}"
+            if display not in order[target]:
+                order[target].append(display)
+    return order
+
+
 def load_titles():
     path = BASE / 'lc_titles.json'
     if not path.is_file():
         return {}
+    with open(path) as f:
+        return json.load(f)
+
+
+def load_basics():
+    path = BASE / 'basics.json'
+    if not path.is_file():
+        return {'union': [], 'lc_75': [], 'top_100': [], 'interview_150': [],
+                'neetcode_150': [], 'blind_75': [], 'grind_75': []}
     with open(path) as f:
         return json.load(f)
 
@@ -390,7 +539,7 @@ def parse_pct(s):
     return float(s.rstrip('%'))
 
 
-def build_company(company, id_to_cats, titles):
+def build_company(company, id_to_cats, titles, basics):
     company_dir = REPO_ROOT / company
     if not company_dir.is_dir():
         print(f"[skip] {company}: directory not found")
@@ -404,6 +553,16 @@ def build_company(company, id_to_cats, titles):
         '6m_plus': company_dir / 'more-than-six-months.csv',
     }
 
+    basic_set = set(basics.get('union', []))
+    basic_sources = {
+        'lc_75': set(basics.get('lc_75', [])),
+        'top_100': set(basics.get('top_100', [])),
+        'interview_150': set(basics.get('interview_150', [])),
+        'neetcode_150': set(basics.get('neetcode_150', [])),
+        'blind_75': set(basics.get('blind_75', [])),
+        'grind_75': set(basics.get('grind_75', [])),
+    }
+
     problems = {}
     for tf, path in timeframes.items():
         if not path.is_file():
@@ -413,6 +572,7 @@ def build_company(company, id_to_cats, titles):
             if pid not in problems:
                 t = titles.get(str(pid), {})
                 slug = t.get('slug') or row['URL'].rstrip('/').split('/')[-1]
+                sources = [name for name, s in basic_sources.items() if pid in s]
                 problems[pid] = {
                     'id': pid,
                     'title': row['Title'],
@@ -422,6 +582,8 @@ def build_company(company, id_to_cats, titles):
                     'acceptance': parse_pct(row['Acceptance %']),
                     'freq': {},
                     'categories': id_to_cats.get(pid, []),
+                    'basic': pid in basic_set,
+                    'basic_sources': sources,
                 }
             problems[pid]['freq'][tf] = parse_pct(row['Frequency %'])
 
@@ -431,6 +593,7 @@ def build_company(company, id_to_cats, titles):
         'company': company,
         'problems': problem_list,
         'main_categories': get_main_categories(),
+        'subcat_order': get_subcat_order(),
         'labels_en': LABELS_EN,
     }
 
@@ -469,8 +632,9 @@ def main():
     companies = sys.argv[1:] or DEFAULT_COMPANIES
     id_to_cats = build_id_to_categories()
     titles = load_titles()
-    print(f"Loaded {len(titles)} problem titles")
-    stats = [build_company(c, id_to_cats, titles) for c in companies]
+    basics = load_basics()
+    print(f"Loaded {len(titles)} problem titles, {len(basics.get('union', []))} basic problems")
+    stats = [build_company(c, id_to_cats, titles, basics) for c in companies]
     build_index([s for s in stats if s])
 
 
@@ -615,6 +779,10 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
   .stats-bar strong { color: #1f2937; }
   .cat-tags { font-size: 11px; color: #9ca3af; }
   .cat-tag { display: inline-block; padding: 1px 6px; background: #f3f4f6; border-radius: 3px; margin-right: 4px; }
+  tr.basic td { background: #fefce8; }
+  tr.basic:hover td { background: #fef9c3; }
+  .star { color: #eab308; margin-right: 4px; }
+  .basic-src { font-size: 10px; color: #ca8a04; margin-left: 6px; }
 </style>
 </head>
 <body>
@@ -653,6 +821,10 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     </select>
   </label>
   <label><span class="l-search">搜索:</span> <input type="text" id="search" placeholder="题目/ID"></label>
+  <label style="display:inline-flex;align-items:center;gap:6px;">
+    <input type="checkbox" id="basic-only">
+    <span class="l-basic">仅显示基础题 ★</span>
+  </label>
 </div>
 <div class="stats-bar" id="stats"></div>
 <div class="layout">
@@ -669,6 +841,7 @@ const state = {
   search: '',
   activeCat: null,
   lang: localStorage.getItem('lang') || 'zh',
+  basicOnly: false,
 };
 
 // UI text bundles
@@ -679,6 +852,8 @@ const UI = {
     back: '← 换公司',
     langBtn: 'EN',
     timeframe: '时间段:', difficulty: '难度:', minFreq: '最小频率:', search: '搜索:',
+    basic: '仅显示基础题 ★',
+    basicHint: '基础题 = Blind 75 / Grind 75 / NeetCode 150 / LC 75 / Top 100 / Interview 150 的并集',
     all: '全部', tf6m: '最近 6 个月', tf30d: '最近 30 天', tf3m: '最近 3 个月',
     tf6mp: '6 个月以前', tfAll: '全部', mfNone: '无限制',
     searchPh: '题目/ID',
@@ -693,6 +868,8 @@ const UI = {
     back: '← Switch company',
     langBtn: '中',
     timeframe: 'Period:', difficulty: 'Difficulty:', minFreq: 'Min Freq:', search: 'Search:',
+    basic: 'Basics only ★',
+    basicHint: 'Basics = union of Blind 75 / Grind 75 / NeetCode 150 / LC 75 / Top 100 / Interview 150',
     all: 'All', tf6m: 'Last 6 months', tf30d: 'Last 30 days', tf3m: 'Last 3 months',
     tf6mp: 'Older than 6 months', tfAll: 'All time', mfNone: 'No limit',
     searchPh: 'Title / ID',
@@ -732,9 +909,11 @@ function problemPassesFilters(p) {
   const f = p.freq[state.timeframe];
   if (f === undefined) return false;
   if (f < state.minFreq) return false;
+  if (state.basicOnly && !p.basic) return false;
   if (state.search) {
     const q = state.search.toLowerCase();
-    if (!p.title.toLowerCase().includes(q) && !String(p.id).includes(q)) return false;
+    const titles = [p.title, p.title_zh || ''];
+    if (!titles.some(t => t.toLowerCase().includes(q)) && !String(p.id).includes(q)) return false;
   }
   return true;
 }
@@ -812,12 +991,12 @@ function renderMain(idx) {
       h.textContent = `${tCat(mc)} (${idx[mc]._all.length})`;
       catBlock.appendChild(h);
     }
-    const subs = Object.keys(idx[mc]).filter(k => k !== '_all');
-    subs.sort((a, b) => {
-      const fa = idx[mc][a].reduce((s, p) => s + getFreq(p), 0);
-      const fb = idx[mc][b].reduce((s, p) => s + getFreq(p), 0);
-      return fb - fa;
-    });
+    // Preserve 灵神's original subcategory order; append any unknown at end.
+    const canonical = (DATA.subcat_order && DATA.subcat_order[mc]) || [];
+    const present = Object.keys(idx[mc]).filter(k => k !== '_all');
+    const subs = [];
+    for (const s of canonical) if (idx[mc][s]) subs.push(s);
+    for (const s of present) if (!subs.includes(s)) subs.push(s);
     for (const sc of subs) {
       const problems = idx[mc][sc];
       const block = document.createElement('div');
@@ -840,14 +1019,22 @@ function buildTable(problems) {
     <th>${l.colId}</th><th>${l.colTitle}</th><th>${l.colDiff}</th><th>${l.colFreq}</th><th>${l.colAcc}</th><th>${l.colCat}</th>
   </tr></thead>`;
   const tb = document.createElement('tbody');
+  const srcLabels = {
+    blind_75: 'Blind75', grind_75: 'Grind75', neetcode_150: 'NC150',
+    lc_75: 'LC75', top_100: 'Hot100', interview_150: 'Int150',
+  };
   for (const p of problems) {
     const f = getFreq(p);
     const tr = document.createElement('tr');
+    if (p.basic) tr.className = 'basic';
     const tags = p.categories.map(([m, s]) =>
       `<span class="cat-tag">${tCat(m)}·${tCat(s)}</span>`).join('');
+    const star = p.basic ? '<span class="star" title="Basic problem">★</span>' : '';
+    const srcs = (p.basic_sources || []).map(s => srcLabels[s] || s).join(' · ');
+    const srcTag = srcs ? `<span class="basic-src" title="${srcs}">${srcs}</span>` : '';
     tr.innerHTML = `
       <td class="id">${p.id}</td>
-      <td class="title"><a href="${problemUrl(p)}" target="_blank" rel="noopener">${problemTitle(p)}</a></td>
+      <td class="title">${star}<a href="${problemUrl(p)}" target="_blank" rel="noopener">${problemTitle(p)}</a>${srcTag}</td>
       <td><span class="diff diff-${p.difficulty}">${p.difficulty}</span></td>
       <td class="freq"><span class="freq-bar" style="width:${Math.max(2, f)}px"></span>${f.toFixed(1)}%</td>
       <td class="freq">${p.acceptance.toFixed(1)}%</td>
@@ -886,6 +1073,9 @@ function applyStaticText() {
   document.querySelector('.tf-all').textContent = l.tfAll;
   document.querySelector('.mf-0').textContent = l.mfNone;
   document.getElementById('search').placeholder = l.searchPh;
+  const basicLabel = document.querySelector('.l-basic');
+  basicLabel.textContent = l.basic;
+  basicLabel.parentElement.title = l.basicHint;
   document.documentElement.lang = state.lang === 'zh' ? 'zh' : 'en';
 }
 
@@ -918,6 +1108,10 @@ document.querySelectorAll('.diff-btn').forEach(btn => {
 document.getElementById('lang-btn').addEventListener('click', () => {
   state.lang = state.lang === 'zh' ? 'en' : 'zh';
   localStorage.setItem('lang', state.lang);
+  rerender();
+});
+document.getElementById('basic-only').addEventListener('change', e => {
+  state.basicOnly = e.target.checked;
   rerender();
 });
 rerender();
