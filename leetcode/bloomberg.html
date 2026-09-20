@@ -239,7 +239,35 @@
     letter-spacing: -0.03em;
   }
   .category-total { padding: 4px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0; }
-  .subcat-block { margin-bottom: 28px; }
+  .subcat-jump {
+    position: sticky;
+    top: 145px;
+    z-index: 8;
+    margin: -2px 0 22px;
+    padding: 11px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+    backdrop-filter: blur(12px);
+  }
+  .subcat-jump-label { color: #475569; font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .subcat-jump select {
+    width: min(420px, 100%);
+    height: 36px;
+    padding: 0 36px 0 11px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    outline: none;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+  }
+  .subcat-jump select:focus { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12); }
+  .subcat-block { margin-bottom: 28px; scroll-margin-top: 220px; }
   .subcat-title {
     margin: 0 2px 9px;
     display: flex;
@@ -282,6 +310,7 @@
   .diff-Easy { background: #dcfce7; color: #15803d; }
   .diff-Medium { background: #fff7d6; color: #a16207; }
   .diff-Hard { background: #fee2e2; color: #dc2626; }
+  .mobile-difficulty-dot { display: none; }
   .col-rating { display: none; }
   body.show-rating .col-rating { display: table-cell; }
   .rating-score { color: var(--accent); font-family: "JetBrains Mono", monospace; font-size: 12px; font-weight: 600; }
@@ -349,16 +378,22 @@
     .cat-item.active .cat-count { background: rgba(255, 255, 255, 0.16); color: rgba(255, 255, 255, 0.85); }
     .main { padding: 0 14px; }
     .category-title { margin: 10px 0 12px; font-size: 18px; }
-    .subcat-block { margin-bottom: 22px; }
+    .subcat-jump { top: 52px; margin: 0 0 18px; padding: 10px; display: grid; gap: 7px; }
+    .subcat-jump select { width: 100%; }
+    .subcat-block { margin-bottom: 22px; scroll-margin-top: 130px; }
     .subcat-title { font-size: 13px; }
     table { border-radius: 12px; font-size: 13px; }
     th, td { padding: 8px; }
     th { font-size: 11px; }
     .col-id, td.id { width: 48px; }
-    .col-diff { width: 84px; }
     .col-rating { width: 88px; }
     .col-freq { width: 92px; }
     td.id { font-size: 11px; }
+    th.col-diff, td.col-diff { display: none; }
+    .mobile-difficulty-dot { width: 7px; height: 7px; margin-right: 7px; display: inline-block; border-radius: 50%; vertical-align: 1px; }
+    .diff-dot-Easy { background: #22c55e; }
+    .diff-dot-Medium { background: #f59e0b; }
+    .diff-dot-Hard { background: #ef4444; }
     .cat-tags, th.col-cat, td.col-cat { display: none; }
     th.col-acc, td.col-acc { display: none; }
     .freq-bar { display: none; }
@@ -370,16 +405,6 @@
     .toggle-control { font-size: 12px; }
     .stats-bar { gap: 6px; }
     .stat-item { padding: 4px 7px; }
-    th.col-diff, td.col-diff { display: none; }
-    td.title::before { content: ''; display: inline-block; }
-    tr.easy-row td.title::before,
-    tr.medium-row td.title::before,
-    tr.hard-row td.title::before {
-      width: 6px; height: 6px; border-radius: 50%; margin-right: 6px;
-    }
-    tr.easy-row td.title::before { background: #16a34a; }
-    tr.medium-row td.title::before { background: #ca8a04; }
-    tr.hard-row td.title::before { background: #dc2626; }
   }
 </style>
 </head>
@@ -476,6 +501,7 @@ const UI = {
     searchPh: '题目/ID',
     colId: '#', colTitle: '题目', colDiff: '难度', colRating: '难度分', colFreq: '频率', colAcc: '通过率', colCat: '分类',
     allCats: '全部分类', empty: '没有符合条件的题目',
+    subcatJump: '小分类跳转', subcatJumpPlaceholder: '选择小分类…',
     stats: (t, m, u) => `<span class="stat-item"><span>题库</span><strong>${t}</strong></span><span class="stat-item"><span>当前匹配</span><strong>${m}</strong></span><span class="stat-item"><span>未分类</span><strong>${u}</strong></span>`,
     problemsCount: (n) => `${n} 题`,
   },
@@ -494,6 +520,7 @@ const UI = {
     searchPh: 'Title / ID',
     colId: '#', colTitle: 'Title', colDiff: 'Difficulty', colRating: 'Rating', colFreq: 'Frequency', colAcc: 'Acceptance', colCat: 'Category',
     allCats: 'All Categories', empty: 'No problems match the current filters',
+    subcatJump: 'Subcategory jump', subcatJumpPlaceholder: 'Choose a subcategory…',
     stats: (t, m, u) => `<span class="stat-item"><span>Library</span><strong>${t}</strong></span><span class="stat-item"><span>Matched</span><strong>${m}</strong></span><span class="stat-item"><span>Uncategorized</span><strong>${u}</strong></span>`,
     problemsCount: (n) => `${n} problems`,
   },
@@ -604,31 +631,57 @@ function renderMain(idx) {
     if (idx[mc]._all.length === 0) continue;
     anyShown = true;
     const catBlock = document.createElement('div');
-    if (!state.activeCat) {
-      const h = document.createElement('h2');
-      h.className = 'category-title';
-      const label = document.createElement('span');
-      label.textContent = tCat(mc);
-      const count = document.createElement('span');
-      count.className = 'category-total';
-      count.textContent = idx[mc]._all.length;
-      h.append(label, count);
-      catBlock.appendChild(h);
-    }
+    const h = document.createElement('h2');
+    h.className = 'category-title';
+    const label = document.createElement('span');
+    label.textContent = tCat(mc);
+    const count = document.createElement('span');
+    count.className = 'category-total';
+    count.textContent = idx[mc]._all.length;
+    h.append(label, count);
+    catBlock.appendChild(h);
     // Preserve 灵神's original subcategory order; append any unknown at end.
     const canonical = (DATA.subcat_order && DATA.subcat_order[mc]) || [];
     const present = Object.keys(idx[mc]).filter(k => k !== '_all');
     const subs = [];
     for (const s of canonical) if (idx[mc][s]) subs.push(s);
     for (const s of present) if (!subs.includes(s)) subs.push(s);
-    for (const sc of subs) {
+    const categoryIndex = [...DATA.main_categories, '未分类'].indexOf(mc);
+    if (state.activeCat) {
+      const jump = document.createElement('label');
+      jump.className = 'subcat-jump';
+      const jumpLabel = document.createElement('span');
+      jumpLabel.className = 'subcat-jump-label';
+      jumpLabel.textContent = t().subcatJump;
+      const select = document.createElement('select');
+      select.setAttribute('aria-label', t().subcatJump);
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = t().subcatJumpPlaceholder;
+      placeholder.selected = true;
+      placeholder.disabled = true;
+      select.appendChild(placeholder);
+      subs.forEach((sc, subIndex) => {
+        const option = document.createElement('option');
+        option.value = `subcat-${categoryIndex}-${subIndex}`;
+        option.textContent = `${tCat(sc)} · ${t().problemsCount(idx[mc][sc].length)}`;
+        select.appendChild(option);
+      });
+      select.addEventListener('change', event => {
+        document.getElementById(event.target.value)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      jump.append(jumpLabel, select);
+      catBlock.appendChild(jump);
+    }
+    subs.forEach((sc, subIndex) => {
       const problems = idx[mc][sc];
       const block = document.createElement('div');
       block.className = 'subcat-block';
+      block.id = `subcat-${categoryIndex}-${subIndex}`;
       block.innerHTML = `<div class="subcat-title">${tCat(sc)}<span class="cnt">${t().problemsCount(problems.length)}</span></div>`;
       block.appendChild(buildTable(problems));
       catBlock.appendChild(block);
-    }
+    });
     main.appendChild(catBlock);
   }
   if (!anyShown) {
@@ -662,6 +715,7 @@ function buildTable(problems) {
     const tags = p.categories.map(([m, s]) =>
       `<span class="cat-tag">${tCat(m)}·${tCat(s)}</span>`).join('');
     const star = p.basic ? '<span class="star" title="Basic problem">★</span>' : '';
+    const difficultyDot = `<span class="mobile-difficulty-dot diff-dot-${p.difficulty}" title="${p.difficulty}" aria-label="${p.difficulty}"></span>`;
     const srcs = (p.basic_sources || []).map(s => srcLabels[s] || s).join(' · ');
     const srcTag = srcs ? `<span class="basic-src" title="${srcs}">${srcs}</span>` : '';
     const rating = p.rating == null
@@ -669,7 +723,7 @@ function buildTable(problems) {
       : `<span class="rating-score" title="${p.rating.toFixed(2)}">${Math.round(p.rating)}</span>`;
     tr.innerHTML = `
       <td class="id">${p.id}</td>
-      <td class="title">${star}<a href="${problemUrl(p)}" target="_blank" rel="noopener">${problemTitle(p)}</a>${srcTag}</td>
+      <td class="title">${difficultyDot}${star}<a href="${problemUrl(p)}" target="_blank" rel="noopener">${problemTitle(p)}</a>${srcTag}</td>
       <td class="col-diff"><span class="diff diff-${p.difficulty}">${p.difficulty}</span></td>
       <td class="col-rating">${rating}</td>
       <td class="freq col-freq"><span class="freq-bar" style="width:${Math.max(2, f)}px"></span>${f.toFixed(1)}%</td>
