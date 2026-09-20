@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Meta LeetCode 高频题 · 灵神分类</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   * { box-sizing: border-box; }
   body {
@@ -143,6 +144,95 @@
   tr.basic:hover td { background: #fef9c3; }
   .star { color: #eab308; margin-right: 4px; }
   .basic-src { font-size: 10px; color: #ca8a04; margin-left: 6px; }
+
+  /* ---------------- Mobile ---------------- */
+  @media (max-width: 768px) {
+    header {
+      padding: 10px 14px; gap: 8px;
+    }
+    header h1 { font-size: 14px; line-height: 1.3; }
+    .subtitle { display: none; }
+    .lang-btn { padding: 5px 10px; font-size: 11px; }
+
+    .controls {
+      padding: 10px 14px;
+      gap: 8px 12px;
+      font-size: 12px;
+    }
+    .controls label { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; }
+    .controls select, .controls input[type=text] {
+      padding: 5px 8px; font-size: 12px;
+    }
+    .controls input[type=text] { width: 130px; }
+    .diff-btn { padding: 4px 8px; font-size: 11px; }
+
+    .stats-bar { padding: 6px 14px; font-size: 11px; }
+
+    /* Sidebar becomes a horizontal chip scroller */
+    .layout { flex-direction: column; }
+    .sidebar {
+      width: 100%;
+      height: auto;
+      position: sticky;
+      top: 0;
+      border-right: none;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 8px 12px;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      z-index: 5;
+    }
+    .sidebar::-webkit-scrollbar { display: none; }
+    .cat-item {
+      padding: 6px 12px;
+      white-space: nowrap;
+      border-left: none;
+      border-radius: 100px;
+      background: #f3f4f6;
+      font-size: 12px;
+      flex-shrink: 0;
+      gap: 6px;
+    }
+    .cat-item:hover { background: #e5e7eb; }
+    .cat-item.active {
+      background: #4f46e5; color: #fff;
+      border-left: none;
+    }
+    .cat-item.active .cat-count { color: rgba(255,255,255,0.7); }
+
+    .main { padding: 14px; }
+    .main > div > h2 { font-size: 16px !important; margin: 10px 0 8px !important; }
+    .subcat-block { margin-bottom: 20px; }
+    .subcat-title { font-size: 13px; }
+    .subcat-title .cnt { font-size: 11px; }
+
+    /* Compact table: hide acceptance + category tags columns */
+    table { font-size: 12px; border-radius: 4px; }
+    th, td { padding: 6px 8px; }
+    th { font-size: 10px; }
+    td.id { width: 40px; font-size: 11px; }
+    .cat-tags, th.col-cat, td.col-cat { display: none; }
+    th.col-acc, td.col-acc { display: none; }
+    .freq-bar { display: none; }
+    .diff { padding: 1px 6px; font-size: 10px; }
+    .basic-src { display: none; }
+  }
+  @media (max-width: 420px) {
+    /* Very narrow: drop difficulty column too, use dot */
+    th.col-diff, td.col-diff { display: none; }
+    td.title::before { content: ''; display: inline-block; }
+    tr.easy-row td.title::before,
+    tr.medium-row td.title::before,
+    tr.hard-row td.title::before {
+      width: 6px; height: 6px; border-radius: 50%; margin-right: 6px;
+    }
+    tr.easy-row td.title::before { background: #16a34a; }
+    tr.medium-row td.title::before { background: #ca8a04; }
+    tr.hard-row td.title::before { background: #dc2626; }
+  }
 </style>
 </head>
 <body>
@@ -376,7 +466,11 @@ function buildTable(problems) {
   const tbl = document.createElement('table');
   const l = t();
   tbl.innerHTML = `<thead><tr>
-    <th>${l.colId}</th><th>${l.colTitle}</th><th>${l.colDiff}</th><th>${l.colFreq}</th><th>${l.colAcc}</th><th>${l.colCat}</th>
+    <th>${l.colId}</th><th>${l.colTitle}</th>
+    <th class="col-diff">${l.colDiff}</th>
+    <th class="col-freq">${l.colFreq}</th>
+    <th class="col-acc">${l.colAcc}</th>
+    <th class="col-cat">${l.colCat}</th>
   </tr></thead>`;
   const tb = document.createElement('tbody');
   const srcLabels = {
@@ -386,7 +480,10 @@ function buildTable(problems) {
   for (const p of problems) {
     const f = getFreq(p);
     const tr = document.createElement('tr');
-    if (p.basic) tr.className = 'basic';
+    const rowClasses = [];
+    if (p.basic) rowClasses.push('basic');
+    rowClasses.push(p.difficulty.toLowerCase() + '-row');
+    tr.className = rowClasses.join(' ');
     const tags = p.categories.map(([m, s]) =>
       `<span class="cat-tag">${tCat(m)}·${tCat(s)}</span>`).join('');
     const star = p.basic ? '<span class="star" title="Basic problem">★</span>' : '';
@@ -395,10 +492,10 @@ function buildTable(problems) {
     tr.innerHTML = `
       <td class="id">${p.id}</td>
       <td class="title">${star}<a href="${problemUrl(p)}" target="_blank" rel="noopener">${problemTitle(p)}</a>${srcTag}</td>
-      <td><span class="diff diff-${p.difficulty}">${p.difficulty}</span></td>
-      <td class="freq"><span class="freq-bar" style="width:${Math.max(2, f)}px"></span>${f.toFixed(1)}%</td>
-      <td class="freq">${p.acceptance.toFixed(1)}%</td>
-      <td class="cat-tags">${tags || '<span style="color:#d1d5db">—</span>'}</td>
+      <td class="col-diff"><span class="diff diff-${p.difficulty}">${p.difficulty}</span></td>
+      <td class="freq col-freq"><span class="freq-bar" style="width:${Math.max(2, f)}px"></span>${f.toFixed(1)}%</td>
+      <td class="freq col-acc">${p.acceptance.toFixed(1)}%</td>
+      <td class="cat-tags col-cat">${tags || '<span style="color:#d1d5db">—</span>'}</td>
     `;
     tb.appendChild(tr);
   }
