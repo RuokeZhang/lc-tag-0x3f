@@ -5,16 +5,52 @@ Sources:
 - LeetCode 75 (official study plan: leetcode-75)
 - Top 100 Liked (official: top-100-liked)
 - Top Interview 150 (official: top-interview-150)
-- NeetCode 150 (hardcoded, sourced from https://neetcode.io/practice)
+- NeetCode 250 (fetched from ascherj/neetcode-250-guide, matched by title)
 - Blind 75 (hardcoded, canonical original list)
 - Grind 75 (hardcoded, from techinterviewhandbook.org/grind75)
 """
 
 import json
+import re
+import ssl
 import urllib.request
 from pathlib import Path
 
 BASE = Path(__file__).parent
+
+
+def _fetch_url(url):
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req, timeout=30, context=ctx) as r:
+        return r.read()
+
+
+def _norm_title(s):
+    return re.sub(r'[^a-z0-9]+', ' ', s.lower()).strip()
+
+
+def fetch_neetcode_250():
+    url = 'https://raw.githubusercontent.com/ascherj/neetcode-250-guide/main/neetcode_250_complete.json'
+    data = json.loads(_fetch_url(url))
+    titles = json.loads((BASE / 'lc_titles.json').read_text())
+    title_to_id = {_norm_title(v['en']): int(k) for k, v in titles.items() if k.isdigit()}
+    # Also allow near-matches: "Subset XOR Total" -> "Subset XOR Totals" (LC 1863)
+    manual = {'sum of all subsets xor total': 1863}
+    ids = []
+    missing = []
+    for p in data['problems']:
+        key = _norm_title(p['name'])
+        pid = title_to_id.get(key) or manual.get(key)
+        if pid:
+            ids.append(pid)
+        else:
+            missing.append(p['name'])
+    if missing:
+        print(f"  [warn] NC250 unmatched: {missing}")
+    return sorted(set(ids))
 
 
 def fetch_study_plan(slug):
@@ -34,28 +70,6 @@ def fetch_study_plan(slug):
             ids.append(int(q['questionFrontendId']))
     return ids
 
-
-# NeetCode 150 (curated from neetcode.io/practice)
-NEETCODE_150 = [
-    217, 242, 1, 49, 347, 271, 238, 36, 128,
-    125, 167, 15, 11, 42,
-    121, 3, 424, 567, 76, 239,
-    20, 155, 150, 22, 739, 853, 84,
-    704, 74, 153, 33, 875, 981, 4,
-    206, 21, 143, 19, 141, 287, 138, 2, 25, 23,
-    226, 104, 543, 110, 100, 572, 235, 105, 124, 297, 98, 230, 199, 1448, 337,
-    208, 211, 212,
-    703, 1046, 973, 215, 621, 355, 295,
-    78, 39, 40, 46, 47, 77, 90, 79, 131, 51,
-    200, 133, 417, 207, 210, 261, 323, 130, 269, 127, 695,
-    743, 787, 1584,
-    70, 746, 198, 213, 5, 647, 91, 322, 152, 300, 139,
-    62, 1143, 309, 518, 494, 97, 329, 115, 72,
-    53, 55, 45, 763, 678, 846, 1899, 134,
-    57, 56, 435, 252, 253, 1851,
-    48, 54, 73, 202, 66, 43, 50, 2013,
-    136, 191, 338, 190, 268, 371, 7,
-]
 
 # Blind 75 (original)
 BLIND_75 = [
@@ -86,11 +100,12 @@ def main():
     lc_75 = fetch_study_plan('leetcode-75')
     top_100 = fetch_study_plan('top-100-liked')
     interview_150 = fetch_study_plan('top-interview-150')
+    neetcode_250 = fetch_neetcode_250()
 
     print(f"LeetCode 75:       {len(lc_75):3d} problems")
     print(f"Top 100 Liked:     {len(top_100):3d} problems")
     print(f"Top Interview 150: {len(interview_150):3d} problems")
-    print(f"NeetCode 150:      {len(set(NEETCODE_150)):3d} problems")
+    print(f"NeetCode 250:      {len(neetcode_250):3d} problems")
     print(f"Blind 75:          {len(set(BLIND_75)):3d} problems")
     print(f"Grind 75:          {len(set(GRIND_75)):3d} problems")
 
@@ -98,7 +113,7 @@ def main():
         'lc_75': lc_75,
         'top_100': top_100,
         'interview_150': interview_150,
-        'neetcode_150': NEETCODE_150,
+        'neetcode_250': neetcode_250,
         'blind_75': BLIND_75,
         'grind_75': GRIND_75,
     }

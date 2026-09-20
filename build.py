@@ -558,7 +558,7 @@ def build_company(company, id_to_cats, titles, basics):
         'lc_75': set(basics.get('lc_75', [])),
         'top_100': set(basics.get('top_100', [])),
         'interview_150': set(basics.get('interview_150', [])),
-        'neetcode_150': set(basics.get('neetcode_150', [])),
+        'neetcode_250': set(basics.get('neetcode_250', [])),
         'blind_75': set(basics.get('blind_75', [])),
         'grind_75': set(basics.get('grind_75', [])),
     }
@@ -853,7 +853,7 @@ const UI = {
     langBtn: 'EN',
     timeframe: '时间段:', difficulty: '难度:', minFreq: '最小频率:', search: '搜索:',
     basic: '仅显示基础题 ★',
-    basicHint: '基础题 = Blind 75 / Grind 75 / NeetCode 150 / LC 75 / Top 100 / Interview 150 的并集',
+    basicHint: '基础题 = Blind 75 / Grind 75 / NeetCode 250 / LC 75 / Top 100 / Interview 150 的并集',
     all: '全部', tf6m: '最近 6 个月', tf30d: '最近 30 天', tf3m: '最近 3 个月',
     tf6mp: '6 个月以前', tfAll: '全部', mfNone: '无限制',
     searchPh: '题目/ID',
@@ -869,7 +869,7 @@ const UI = {
     langBtn: '中',
     timeframe: 'Period:', difficulty: 'Difficulty:', minFreq: 'Min Freq:', search: 'Search:',
     basic: 'Basics only ★',
-    basicHint: 'Basics = union of Blind 75 / Grind 75 / NeetCode 150 / LC 75 / Top 100 / Interview 150',
+    basicHint: 'Basics = union of Blind 75 / Grind 75 / NeetCode 250 / LC 75 / Top 100 / Interview 150',
     all: 'All', tf6m: 'Last 6 months', tf30d: 'Last 30 days', tf3m: 'Last 3 months',
     tf6mp: 'Older than 6 months', tfAll: 'All time', mfNone: 'No limit',
     searchPh: 'Title / ID',
@@ -1020,7 +1020,7 @@ function buildTable(problems) {
   </tr></thead>`;
   const tb = document.createElement('tbody');
   const srcLabels = {
-    blind_75: 'Blind75', grind_75: 'Grind75', neetcode_150: 'NC150',
+    blind_75: 'Blind75', grind_75: 'Grind75', neetcode_250: 'NC250',
     lc_75: 'LC75', top_100: 'Hot100', interview_150: 'Int150',
   };
   for (const p of problems) {
