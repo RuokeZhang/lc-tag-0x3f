@@ -210,6 +210,7 @@
     box-shadow: var(--shadow);
   }
   .cat-item {
+    width: 100%;
     min-height: 38px;
     padding: 9px 10px 9px 12px;
     display: flex;
@@ -219,14 +220,25 @@
     border-radius: 10px;
     color: #475569;
     cursor: pointer;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    text-align: left;
     font-size: 13px;
     font-weight: 500;
     transition: background 140ms ease, color 140ms ease, transform 140ms ease;
   }
   .cat-item:hover { background: var(--surface-soft); color: var(--text); transform: translateX(2px); }
   .cat-item.active { background: var(--accent-soft); color: var(--accent-strong); font-weight: 700; }
+  .cat-meta { display: flex; align-items: center; gap: 8px; }
+  .cat-chevron { color: #94a3b8; font-size: 12px; transition: transform 140ms ease; }
+  .cat-item[aria-expanded="true"] .cat-chevron { transform: rotate(90deg); }
   .cat-count { min-width: 26px; padding: 2px 6px; border-radius: 999px; background: #f1f5f9; color: #94a3b8; font-family: "JetBrains Mono", monospace; font-size: 11px; text-align: center; }
   .cat-item.active .cat-count { background: rgba(79, 70, 229, 0.1); color: var(--accent); }
+  .subcat-list { margin: 2px 0 8px 16px; padding-left: 9px; border-left: 1px solid var(--border); }
+  .subcat-link { display: flex; justify-content: space-between; gap: 8px; padding: 6px 8px; border-radius: 8px; color: #64748b; font-size: 12px; text-decoration: none; }
+  .subcat-link:hover { background: var(--surface-soft); color: var(--accent-strong); }
+  .subcat-count { color: #94a3b8; font-family: "JetBrains Mono", monospace; font-size: 11px; }
   .main { min-width: 0; }
   .category-title {
     margin: 8px 0 14px;
@@ -239,35 +251,7 @@
     letter-spacing: -0.03em;
   }
   .category-total { padding: 4px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0; }
-  .subcat-jump {
-    position: sticky;
-    top: 145px;
-    z-index: 8;
-    margin: -2px 0 22px;
-    padding: 11px 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.94);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
-    backdrop-filter: blur(12px);
-  }
-  .subcat-jump-label { color: #475569; font-size: 13px; font-weight: 700; white-space: nowrap; }
-  .subcat-jump select {
-    width: min(420px, 100%);
-    height: 36px;
-    padding: 0 36px 0 11px;
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    outline: none;
-    background: var(--surface);
-    color: var(--text);
-    font-size: 13px;
-  }
-  .subcat-jump select:focus { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12); }
-  .subcat-block { margin-bottom: 28px; scroll-margin-top: 220px; }
+  .subcat-block { margin-bottom: 28px; scroll-margin-top: 165px; }
   .subcat-title {
     margin: 0 2px 9px;
     display: flex;
@@ -345,42 +329,20 @@
     .stat-item { flex: 0 0 auto; }
     .layout { padding: 14px 0 40px; display: block; }
     .sidebar {
-      width: 100%;
-      max-height: none;
-      margin: 0 0 16px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      max-height: 280px;
+      margin: 0 14px 16px;
+      position: static;
       padding: 9px 14px;
-      display: flex;
-      gap: 6px;
-      border-width: 1px 0;
-      border-radius: 0;
-      overflow-x: auto;
+      overflow-y: auto;
       background: rgba(255, 255, 255, 0.94);
       box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
-      backdrop-filter: blur(12px);
       -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
     }
-    .sidebar::-webkit-scrollbar { display: none; }
-    .cat-item {
-      min-height: 32px;
-      padding: 6px 10px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      border-radius: 999px;
-      background: #f1f5f9;
-      font-size: 12px;
-    }
+    .cat-item { min-height: 32px; font-size: 12px; }
     .cat-item:hover { transform: none; }
-    .cat-item.active { background: var(--accent); color: #fff; }
-    .cat-item.active .cat-count { background: rgba(255, 255, 255, 0.16); color: rgba(255, 255, 255, 0.85); }
     .main { padding: 0 14px; }
     .category-title { margin: 10px 0 12px; font-size: 18px; }
-    .subcat-jump { top: 52px; margin: 0 0 18px; padding: 10px; display: grid; gap: 7px; }
-    .subcat-jump select { width: 100%; }
-    .subcat-block { margin-bottom: 22px; scroll-margin-top: 130px; }
+    .subcat-block { margin-bottom: 22px; scroll-margin-top: 16px; }
     .subcat-title { font-size: 13px; }
     table { border-radius: 12px; font-size: 13px; }
     th, td { padding: 8px; }
@@ -479,6 +441,7 @@ const state = {
   minFreq: 0,
   search: '',
   activeCat: null,
+  expandedCat: null,
   lang: localStorage.getItem('lang') || 'zh',
   basicOnly: false,
   showRating: false,
@@ -501,7 +464,6 @@ const UI = {
     searchPh: '题目/ID',
     colId: '#', colTitle: '题目', colDiff: '难度', colRating: '难度分', colFreq: '频率', colAcc: '通过率', colCat: '分类',
     allCats: '全部分类', empty: '没有符合条件的题目',
-    subcatJump: '小分类跳转', subcatJumpPlaceholder: '选择小分类…',
     stats: (t, m, u) => `<span class="stat-item"><span>题库</span><strong>${t}</strong></span><span class="stat-item"><span>当前匹配</span><strong>${m}</strong></span><span class="stat-item"><span>未分类</span><strong>${u}</strong></span>`,
     problemsCount: (n) => `${n} 题`,
   },
@@ -520,7 +482,6 @@ const UI = {
     searchPh: 'Title / ID',
     colId: '#', colTitle: 'Title', colDiff: 'Difficulty', colRating: 'Rating', colFreq: 'Frequency', colAcc: 'Acceptance', colCat: 'Category',
     allCats: 'All Categories', empty: 'No problems match the current filters',
-    subcatJump: 'Subcategory jump', subcatJumpPlaceholder: 'Choose a subcategory…',
     stats: (t, m, u) => `<span class="stat-item"><span>Library</span><strong>${t}</strong></span><span class="stat-item"><span>Matched</span><strong>${m}</strong></span><span class="stat-item"><span>Uncategorized</span><strong>${u}</strong></span>`,
     problemsCount: (n) => `${n} problems`,
   },
@@ -601,24 +562,56 @@ function buildCategoryIndex() {
   return idx;
 }
 
+function orderedSubcategories(idx, mainCategory) {
+  const canonical = (DATA.subcat_order && DATA.subcat_order[mainCategory]) || [];
+  const present = Object.keys(idx[mainCategory]).filter(name => name !== '_all');
+  const ordered = canonical.filter(name => idx[mainCategory][name]);
+  for (const name of present) if (!ordered.includes(name)) ordered.push(name);
+  return ordered;
+}
+
 function renderSidebar(idx) {
   const sb = document.getElementById('sidebar');
   sb.innerHTML = '';
   const cats = [...DATA.main_categories, '未分类'];
   const totalMatched = cats.reduce((s, c) => s + idx[c]._all.length, 0);
-  const all = document.createElement('div');
+  const all = document.createElement('button');
+  all.type = 'button';
   all.className = 'cat-item' + (state.activeCat === null ? ' active' : '');
   all.innerHTML = `<span>${t().allCats}</span><span class="cat-count">${totalMatched}</span>`;
-  all.onclick = () => { state.activeCat = null; rerender(); };
+  all.onclick = () => { state.activeCat = null; state.expandedCat = null; rerender(); };
   sb.appendChild(all);
   for (const mc of cats) {
     const n = idx[mc]._all.length;
     if (n === 0) continue;
-    const el = document.createElement('div');
+    const el = document.createElement('button');
+    el.type = 'button';
     el.className = 'cat-item' + (state.activeCat === mc ? ' active' : '');
-    el.innerHTML = `<span>${tCat(mc)}</span><span class="cat-count">${n}</span>`;
-    el.onclick = () => { state.activeCat = mc; rerender(); };
+    el.setAttribute('aria-expanded', state.expandedCat === mc ? 'true' : 'false');
+    el.innerHTML = `<span>${tCat(mc)}</span><span class="cat-meta"><span class="cat-count">${n}</span><span class="cat-chevron" aria-hidden="true">▸</span></span>`;
+    el.onclick = () => {
+      state.expandedCat = state.expandedCat === mc ? null : mc;
+      state.activeCat = mc;
+      rerender();
+    };
     sb.appendChild(el);
+    if (state.expandedCat !== mc) continue;
+    const subcategoryList = document.createElement('div');
+    subcategoryList.className = 'subcat-list';
+    const categoryIndex = cats.indexOf(mc);
+    orderedSubcategories(idx, mc).forEach((subcategory, subcategoryIndex) => {
+      const targetId = `subcat-${categoryIndex}-${subcategoryIndex}`;
+      const link = document.createElement('a');
+      link.className = 'subcat-link';
+      link.href = `#${targetId}`;
+      link.innerHTML = `<span>${tCat(subcategory)}</span><span class="subcat-count">${idx[mc][subcategory].length}</span>`;
+      link.onclick = event => {
+        event.preventDefault();
+        document.getElementById(targetId).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      subcategoryList.appendChild(link);
+    });
+    sb.appendChild(subcategoryList);
   }
 }
 
@@ -640,39 +633,8 @@ function renderMain(idx) {
     count.textContent = idx[mc]._all.length;
     h.append(label, count);
     catBlock.appendChild(h);
-    // Preserve 灵神's original subcategory order; append any unknown at end.
-    const canonical = (DATA.subcat_order && DATA.subcat_order[mc]) || [];
-    const present = Object.keys(idx[mc]).filter(k => k !== '_all');
-    const subs = [];
-    for (const s of canonical) if (idx[mc][s]) subs.push(s);
-    for (const s of present) if (!subs.includes(s)) subs.push(s);
+    const subs = orderedSubcategories(idx, mc);
     const categoryIndex = [...DATA.main_categories, '未分类'].indexOf(mc);
-    if (state.activeCat) {
-      const jump = document.createElement('label');
-      jump.className = 'subcat-jump';
-      const jumpLabel = document.createElement('span');
-      jumpLabel.className = 'subcat-jump-label';
-      jumpLabel.textContent = t().subcatJump;
-      const select = document.createElement('select');
-      select.setAttribute('aria-label', t().subcatJump);
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = t().subcatJumpPlaceholder;
-      placeholder.selected = true;
-      placeholder.disabled = true;
-      select.appendChild(placeholder);
-      subs.forEach((sc, subIndex) => {
-        const option = document.createElement('option');
-        option.value = `subcat-${categoryIndex}-${subIndex}`;
-        option.textContent = `${tCat(sc)} · ${t().problemsCount(idx[mc][sc].length)}`;
-        select.appendChild(option);
-      });
-      select.addEventListener('change', event => {
-        document.getElementById(event.target.value)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-      jump.append(jumpLabel, select);
-      catBlock.appendChild(jump);
-    }
     subs.forEach((sc, subIndex) => {
       const problems = idx[mc][sc];
       const block = document.createElement('div');
